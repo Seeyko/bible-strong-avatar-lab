@@ -20,5 +20,12 @@ export default defineConfig({
   build: {
     outDir: path.join(root, 'dist'),
     emptyOutDir: true,
+    rolldownOptions: {
+      input: {
+        main: path.join(root, 'index.html'),
+        grokCompare: path.join(root, 'grok-compare/index.html'),
+        captureLab: path.join(root, 'capture-lab/index.html'),
+      },
+    },
   },
 })
