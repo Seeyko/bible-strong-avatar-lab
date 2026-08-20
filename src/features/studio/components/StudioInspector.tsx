@@ -2,6 +2,7 @@ import {
   ArrowLeft,
   ArrowRight,
   Camera,
+  Check,
   ChevronDown,
   ChevronUp,
   Copy,
@@ -20,7 +21,7 @@ import {
   Upload,
 } from 'lucide-react'
 import { AnimatePresence, animate, motion, useMotionValue, useTransform } from 'motion/react'
-import { type CSSProperties, useLayoutEffect, useRef, useState } from 'react'
+import { type CSSProperties, useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 import {
   Accordion,
@@ -58,7 +59,12 @@ import {
   StatePlayer,
 } from '@/app/components/common'
 import { ColorField, LinkButton, NumericField } from '@/app/components/controls'
-import { formatSeconds, type Side, type SnapshotFormat } from '@/app/studio-utils'
+import {
+  COPY_FEEDBACK_DURATION_MS,
+  formatSeconds,
+  type Side,
+  type SnapshotFormat,
+} from '@/app/studio-utils'
 import { SequenceWorkspace } from '@/features/animation/components/SequenceWorkspace'
 import { findExpressionIndex, groupSequences } from '@/features/animation/sequences'
 import { defaultAvatarEyes } from '@/features/avatar/avatars'
@@ -73,7 +79,10 @@ import { type SnapshotBackground } from '@/features/export/snapshotExporter'
 import { AvatarPage } from '@/features/studio/components/AvatarDrawer'
 import { BodyConstructionAccordion } from '@/features/studio/components/BodyConstructionAccordion'
 import { HighlightedRuntimeCode } from '@/features/studio/components/HighlightedRuntimeCode'
-import { RuntimeGuideDialog } from '@/features/studio/components/RuntimeGuideDialog'
+import {
+  buildRuntimeGuideText,
+  RuntimeGuideDialog,
+} from '@/features/studio/components/RuntimeGuideDialog'
 import { RuntimePreviewDialog } from '@/features/studio/components/RuntimePreviewDialog'
 import { StudioIdentity } from '@/features/studio/components/StudioIdentity'
 import type { StudioController } from '@/features/studio/useStudioController'
@@ -398,6 +407,15 @@ function PoseControls({ controller }: { controller: StudioController }) {
 export function StudioInspector({ controller }: { controller: StudioController }) {
   const [runtimePreviewOpen, setRuntimePreviewOpen] = useState(false)
   const [guideOpen, setGuideOpen] = useState(false)
+  const [guideCopyFeedback, setGuideCopyFeedback] = useState<{
+    format: 'react' | 'javascript'
+    status: 'success' | 'error'
+  } | null>(null)
+  useEffect(() => {
+    if (!guideCopyFeedback) return
+    const timeout = window.setTimeout(() => setGuideCopyFeedback(null), COPY_FEEDBACK_DURATION_MS)
+    return () => window.clearTimeout(timeout)
+  }, [guideCopyFeedback])
   const [exportAnimationsOpen, setExportAnimationsOpen] = useState(false)
   const {
     activateAvatar,
@@ -541,9 +559,30 @@ export function StudioInspector({ controller }: { controller: StudioController }
     updateWireVisibility,
     workspaceBackButtonRef,
   } = controller
+
+  const copyRuntimeGuide = async () => {
+    if (!navigator.clipboard) {
+      setGuideCopyFeedback({ format: exportFormat, status: 'error' })
+      return
+    }
+    try {
+      await navigator.clipboard.writeText(
+        buildRuntimeGuideText({
+          animationKey: runtimePreviewAnimation,
+          integration: exportFormat,
+          t,
+        })
+      )
+      setGuideCopyFeedback({ format: exportFormat, status: 'success' })
+    } catch {
+      setGuideCopyFeedback({ format: exportFormat, status: 'error' })
+    }
+  }
   const runtimePreviewAnimation = runtimeDefinitionResult.ok
     ? runtimeDefinitionResult.value.animationOrder[0]
     : undefined
+  const guideCopyStatus =
+    guideCopyFeedback?.format === exportFormat ? guideCopyFeedback.status : 'idle'
   const updateSnapshotComposition = (patch: Partial<typeof snapshotComposition>) =>
     setSnapshotComposition(current => ({ ...current, ...patch }))
   const playbackFooterY = useMotionValue(0)
@@ -1725,8 +1764,24 @@ export function StudioInspector({ controller }: { controller: StudioController }
                     <div className="runtime-quick-start-heading">
                       <div>
                         <p className="eyebrow">{t('Démarrage rapide')}</p>
-                        <h2>{t('Utiliser cet avatar')}</h2>
                       </div>
+                    </div>
+                    <div className="runtime-quick-start-actions">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        aria-label={
+                          guideCopyStatus === 'success'
+                            ? t('Guide d’utilisation copié dans le presse-papiers.')
+                            : guideCopyStatus === 'error'
+                              ? t('Impossible de copier le guide d’utilisation.')
+                              : undefined
+                        }
+                        onClick={() => void copyRuntimeGuide()}
+                      >
+                        {guideCopyStatus === 'success' ? <Check /> : <Copy />}
+                        {t('Copier les instructions pour l’IA')}
+                      </Button>
                       <Button type="button" variant="ghost" onClick={() => setGuideOpen(true)}>
                         {t('Voir le guide complet')}
                         <ArrowRight />
@@ -1814,27 +1869,21 @@ export function StudioInspector({ controller }: { controller: StudioController }
                           type="button"
                           variant="outline"
                           disabled={!runtimeDefinitionResult.ok}
+                          aria-label={
+                            runtimeCopyStatus === 'success'
+                              ? t('JSON runtime copié dans le presse-papiers.')
+                              : runtimeCopyStatus === 'error'
+                                ? t('Impossible de copier le JSON runtime.')
+                                : undefined
+                          }
                           onClick={() => void copyAvatarRuntimeDefinition()}
                         >
-                          <Copy />
+                          {runtimeCopyStatus === 'success' ? <Check /> : <Copy />}
                           {t('Copier le JSON')}
                         </Button>
                       </div>
                     </div>
                   </InspectorCard>
-                  {runtimeCopyStatus !== 'idle' && (
-                    <p
-                      className="runtime-copy-status"
-                      role={runtimeCopyStatus === 'error' ? 'alert' : 'status'}
-                      aria-live={runtimeCopyStatus === 'error' ? 'assertive' : 'polite'}
-                    >
-                      {t(
-                        runtimeCopyStatus === 'success'
-                          ? 'JSON runtime copié dans le presse-papiers.'
-                          : 'Impossible de copier le JSON runtime.'
-                      )}
-                    </p>
-                  )}
                   <RuntimePreviewDialog
                     definition={runtimeDefinitionResult.ok ? runtimeDefinitionResult.value : null}
                     initialAnimation={runtimePreviewAnimation}

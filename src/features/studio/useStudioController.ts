@@ -6,6 +6,7 @@ import { useStudioLanguage } from '@/i18n'
 import {
   AMBIENT_FRAME_MS,
   bounded,
+  COPY_FEEDBACK_DURATION_MS,
   createExpressionId,
   downloadBlob,
   INSPECTOR_FRAME_MS,
@@ -169,6 +170,14 @@ export function useStudioController() {
     status: 'idle' | 'success' | 'error'
     source?: readonly unknown[]
   }>({ status: 'idle' })
+  useEffect(() => {
+    if (runtimeCopyFeedback.status === 'idle') return
+    const timeout = window.setTimeout(
+      () => setRuntimeCopyFeedback({ status: 'idle' }),
+      COPY_FEEDBACK_DURATION_MS
+    )
+    return () => window.clearTimeout(timeout)
+  }, [runtimeCopyFeedback])
   const initialStatePlayback = initialDocument.playback
   const updateStudioLibrary = (library: typeof initialDocument.library) =>
     documentStore.update({ library })

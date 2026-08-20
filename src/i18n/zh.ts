@@ -139,6 +139,9 @@ export const chinese: Record<string, string> = {
   'Aucune animation sélectionnée': '未选择动画',
   'Guide d’utilisation': '使用指南',
   'Voir le guide complet': '查看完整使用指南',
+  'Copier les instructions pour l’IA': '复制 AI 使用说明',
+  'Guide d’utilisation copié dans le presse-papiers.': '使用指南已复制到剪贴板。',
+  'Impossible de copier le guide d’utilisation.': '无法复制使用指南。',
   'Guide d’utilisation de l’avatar React': 'React 头像使用指南',
   'Guide d’utilisation de l’avatar JavaScript': 'JavaScript 头像使用指南',
   'Installe le package, crée ton composant et choisis le niveau de contrôle adapté.':

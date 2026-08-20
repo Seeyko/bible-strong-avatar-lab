@@ -170,6 +170,9 @@ const english: Record<string, string> = {
   'Aucune animation sélectionnée': 'No animation selected',
   'Guide d’utilisation': 'Usage guide',
   'Voir le guide complet': 'View full usage guide',
+  'Copier les instructions pour l’IA': 'Copy instruction for AI',
+  'Guide d’utilisation copié dans le presse-papiers.': 'Usage guide copied to the clipboard.',
+  'Impossible de copier le guide d’utilisation.': 'Could not copy the usage guide.',
   'Guide d’utilisation de l’avatar React': 'React avatar usage guide',
   'Guide d’utilisation de l’avatar JavaScript': 'JavaScript avatar usage guide',
   'Installe le package, crée ton composant et choisis le niveau de contrôle adapté.':
