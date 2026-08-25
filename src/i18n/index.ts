@@ -76,6 +76,7 @@ const english: Record<string, string> = {
     'Use lowercase letters, numbers, and hyphens, for example happy-smile.',
   'neutral est réservé à l’apparence neutre de l’avatar.':
     'neutral is reserved for the avatar neutral appearance.',
+  'Apparence neutre': 'Neutral appearance',
   'Cette clé est déjà utilisée dans cette bibliothèque.':
     'This key is already used in this library.',
   'L’avatar à gauche affiche cette expression en direct.':

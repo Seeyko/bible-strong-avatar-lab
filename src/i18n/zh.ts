@@ -48,6 +48,7 @@ export const chinese: Record<string, string> = {
   'Utilise des lettres minuscules, des chiffres et des tirets, par exemple happy-smile.':
     '请使用小写字母、数字和连字符，例如 happy-smile。',
   'neutral est réservé à l’apparence neutre de l’avatar.': 'neutral 保留用于头像的中性外观。',
+  'Apparence neutre': '中性外观',
   'Cette clé est déjà utilisée dans cette bibliothèque.': '此键已在当前库中使用。',
   'L’avatar à gauche affiche cette expression en direct.': '左侧头像会实时预览此表情。',
   Corps: '身体',

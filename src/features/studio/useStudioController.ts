@@ -36,8 +36,10 @@ import {
   duplicateSequence,
   findExpressionIndex,
   getSequenceSpring,
+  NEUTRAL_EXPRESSION_ID,
   readSequenceClock,
   remapSequencesAfterExpressionDelete,
+  resolveSequenceExpression,
   type AvatarSequence,
   type SequenceStep,
 } from '@/features/animation/sequences'
@@ -66,7 +68,7 @@ import {
 } from '@/features/avatar/avatars'
 import {
   isAvatarDefinitionSource,
-  studioAvatarFromDefinition,
+  studioAvatarFromDefinitionSource,
 } from '@/features/avatar/importAvatarDefinition'
 import {
   bodyPrimitiveTypes,
@@ -1104,16 +1106,15 @@ export function useStudioController() {
       playbackTimeline.current = { ...playbackTimeline.current, stepDueAt: null }
       const step = sequence.steps[playbackTimeline.current.position]
       const availableExpressions = expressionsRef.current
-      const expressionIndex = findExpressionIndex(availableExpressions, step.expressionId)
-      const preset = availableExpressions[expressionIndex]
+      const resolved = resolveSequenceExpression(availableExpressions, step.expressionId)
       const durationMs = (reduceMotion ? 0 : step.transitionMs) + step.holdMs
       setPlaybackVisual(current => ({
         position: playbackTimeline.current.position,
         run: current.run + 1,
         durationMs,
       }))
-      if (preset) {
-        transitionToExpression(preset, expressionIndex, step)
+      if (resolved.expression) {
+        transitionToExpression(resolved.expression, resolved.index, step)
       }
       scheduleAdvance(durationMs)
     }
@@ -1402,15 +1403,18 @@ export function useStudioController() {
           steps: sequence.steps.map(step => ({ ...step })),
           blink: { ...sequence.blink },
         }
-      : createSequence(expressions[activeExpression ?? 0]?.id ?? expressions[0]?.id)
+      : createSequence(
+          expressions[activeExpression ?? 0]?.id ?? expressions[0]?.id ?? NEUTRAL_EXPRESSION_ID
+        )
     setSequenceEditing({ sourceId: sequence?.id ?? null, draft })
     setSelectedSequenceStepId(draft.steps[0]?.id ?? null)
     const firstStep = draft.steps[0]
-    const expressionIndex = firstStep
-      ? findExpressionIndex(expressions, firstStep.expressionId)
-      : -1
-    const preset = expressions[expressionIndex]
-    if (preset) transitionToExpression(preset, expressionIndex, firstStep)
+    const resolved = firstStep
+      ? resolveSequenceExpression(expressions, firstStep.expressionId)
+      : null
+    if (resolved?.expression) {
+      transitionToExpression(resolved.expression, resolved.index, firstStep)
+    }
   }
 
   const cancelSequenceEditing = () => {
@@ -1824,9 +1828,8 @@ export function useStudioController() {
       .then(source => {
         // One picker, two formats: a `.avatar.json` definition adds a single avatar
         // to the current library, a studio project replaces the whole document.
-        const parsed: unknown = JSON.parse(source)
-        if (isAvatarDefinitionSource(parsed)) {
-          const { avatar } = studioAvatarFromDefinition(parsed)
+        try {
+          const { avatar } = studioAvatarFromDefinitionSource(source)
           const document = currentStudioDocument()
           setPendingProjectImport({
             document: {
@@ -1843,13 +1846,19 @@ export function useStudioController() {
             kind: 'avatar',
           })
           return
+        } catch (avatarError) {
+          const parsed: unknown = JSON.parse(source)
+          if (isAvatarDefinitionSource(parsed)) throw avatarError
         }
         const imported = parseImportedStudioDocument(source, currentStudioDocument())
         setPendingProjectImport({ document: imported, fileName: file.name, kind: 'project' })
       })
-      .catch(() => {
+      .catch(error => {
+        const summary = t(
+          'Ce fichier n’est ni un avatar .avatar.json ni un projet Avatar Studio valide.'
+        )
         setProjectImportError(
-          t('Ce fichier n’est ni un avatar .avatar.json ni un projet Avatar Studio valide.')
+          error instanceof Error && error.message ? `${summary} ${error.message}` : summary
         )
       })
   }

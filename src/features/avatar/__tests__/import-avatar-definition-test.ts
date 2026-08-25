@@ -1,8 +1,14 @@
+import { type AvatarDefinition } from '@bible-strong/avatar-core'
 import { describe, expect, it } from 'vitest'
 
 import strobi from '../../../../examples/react-vite-consumer/src/strobi.avatar.json'
+import { NEUTRAL_EXPRESSION_ID } from '../../animation/sequences'
 import { createAvatarDefinition } from '../avatarDefinition'
-import { isAvatarDefinitionSource, studioAvatarFromDefinition } from '../importAvatarDefinition'
+import {
+  isAvatarDefinitionSource,
+  studioAvatarFromDefinition,
+  studioAvatarFromDefinitionSource,
+} from '../importAvatarDefinition'
 
 describe('studioAvatarFromDefinition', () => {
   it('recognises a definition and rejects a studio project', () => {
@@ -39,5 +45,101 @@ describe('studioAvatarFromDefinition', () => {
     expect(result.value.expressionOrder).toEqual(strobi.expressionOrder)
     expect(result.value.animationOrder).toEqual(strobi.animationOrder)
     expect(result.value.expressions).toEqual(strobi.expressions)
+    expect(result.value.animations).toEqual(strobi.animations)
+  })
+
+  it('inverts customized neutral eyes instead of applying them twice', () => {
+    const customized = structuredClone(strobi) as AvatarDefinition
+    Object.values(customized.expressions).forEach(item => {
+      item.eyes.left.width += 10
+      item.eyes.right.width += 10
+      item.eyes.spacing += 6
+      item.eyes.left.y -= 4
+      item.eyes.right.y -= 4
+    })
+
+    const imported = studioAvatarFromDefinition(customized)
+    const result = createAvatarDefinition({
+      avatar: imported.avatar,
+      behavior: { expressions: imported.expressions, sequences: imported.sequences },
+    })
+
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.value.expressions.neutral).toEqual(customized.expressions.neutral)
+    Object.keys(customized.expressions).forEach(key => {
+      expect(result.value.expressions[key].eyes.left.width).toBeCloseTo(
+        customized.expressions[key].eyes.left.width,
+        10
+      )
+      expect(result.value.expressions[key].eyes.spacing).toBeCloseTo(
+        customized.expressions[key].eyes.spacing,
+        10
+      )
+      expect(result.value.expressions[key].eyes.left.y).toBeCloseTo(
+        customized.expressions[key].eyes.left.y,
+        10
+      )
+    })
+  })
+
+  it('preserves animation steps targeting the neutral appearance', () => {
+    const customized = structuredClone(strobi) as AvatarDefinition
+    customized.animations.sleeping.steps[0].expression = 'neutral'
+
+    const imported = studioAvatarFromDefinition(customized)
+    const sleeping = imported.sequences.find(sequence => sequence.semanticKey === 'sleeping')
+    expect(sleeping?.steps[0].expressionId).toBe(NEUTRAL_EXPRESSION_ID)
+
+    const result = createAvatarDefinition({
+      avatar: imported.avatar,
+      behavior: { expressions: imported.expressions, sequences: imported.sequences },
+    })
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.value.animations.sleeping).toEqual(customized.animations.sleeping)
+  })
+
+  it('creates unique Studio ids for repeated imports', () => {
+    const first = studioAvatarFromDefinition(strobi)
+    const second = studioAvatarFromDefinition(strobi)
+
+    expect(first.avatar.id).not.toBe(second.avatar.id)
+    expect(first.expressions[0].id).not.toBe(second.expressions[0].id)
+    expect(first.sequences[0].id).not.toBe(second.sequences[0].id)
+  })
+
+  it('rejects neutral properties that the Studio cannot represent', () => {
+    const customized = structuredClone(strobi) as AvatarDefinition
+    customized.expressions.neutral.head.x = 1
+
+    expect(() => studioAvatarFromDefinition(customized)).toThrow(
+      'The neutral expression must use zero head rotation'
+    )
+  })
+
+  it('rejects eye dimensions that the Studio would clamp during re-export', () => {
+    const customized = structuredClone(strobi) as AvatarDefinition
+    customized.expressions['upward-side-glance'].eyes.left.width = 9
+
+    expect(() => studioAvatarFromDefinition(customized)).toThrow(
+      'uses an eye dimension below the Studio minimum of 10'
+    )
+  })
+
+  it('uses bounded parsing for untrusted definition text', () => {
+    expect(() => studioAvatarFromDefinitionSource('{')).toThrow('Unterminated object')
+    expect(() =>
+      studioAvatarFromDefinitionSource(JSON.stringify({ ...strobi, schemaVersion: 2 }))
+    ).toThrow()
+
+    const duplicateKey = JSON.stringify(strobi).replace(
+      '"schemaVersion":1',
+      '"schemaVersion":1,"schemaVersion":1'
+    )
+    expect(() => studioAvatarFromDefinitionSource(duplicateKey)).toThrow('Duplicate object member')
+    expect(() => studioAvatarFromDefinitionSource(' '.repeat(262_145))).toThrow(
+      'JSON input exceeds'
+    )
   })
 })
