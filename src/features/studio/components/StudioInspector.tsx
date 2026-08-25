@@ -66,7 +66,7 @@ import {
   type SnapshotFormat,
 } from '@/app/studio-utils'
 import { SequenceWorkspace } from '@/features/animation/components/SequenceWorkspace'
-import { findExpressionIndex, groupSequences } from '@/features/animation/sequences'
+import { groupSequences, resolveSequenceExpression } from '@/features/animation/sequences'
 import { defaultAvatarEyes } from '@/features/avatar/avatars'
 import {
   ExpressionCard,
@@ -679,9 +679,10 @@ export function StudioInspector({ controller }: { controller: StudioController }
                 setSequenceEditing(current => (current ? { ...current, draft } : current))
               }
               onPreviewStep={step => {
-                const expressionIndex = findExpressionIndex(expressions, step.expressionId)
-                const preset = expressions[expressionIndex]
-                if (preset) transitionToExpression(preset, expressionIndex, step)
+                const resolved = resolveSequenceExpression(expressions, step.expressionId)
+                if (resolved.expression) {
+                  transitionToExpression(resolved.expression, resolved.index, step)
+                }
               }}
               onEditExpression={openExpressionEditor}
               onPlay={() => launchSequence(sequenceEditing.draft, false, false)}
@@ -1065,17 +1066,6 @@ export function StudioInspector({ controller }: { controller: StudioController }
                     <Copy />
                     {t('Dupliquer')}
                   </Button>
-                  <Button
-                    variant="outline"
-                    disabled={!runtimeDefinitionResult.ok}
-                    // downloadAvatarRuntimeDefinition is a no-op on an invalid
-                    // definition, so surface why the button is dead.
-                    title={runtimeExportErrors[0] ?? undefined}
-                    onClick={downloadAvatarRuntimeDefinition}
-                  >
-                    <Download />
-                    {t('Exporter')}
-                  </Button>
                 </div>
                 <Button onClick={saveAvatarEditing}>{t('Enregistrer')}</Button>
               </footer>
@@ -1225,7 +1215,8 @@ export function StudioInspector({ controller }: { controller: StudioController }
                           {group.sequences.map(sequence => {
                             const firstStep = sequence.steps[0]
                             const firstExpression = firstStep
-                              ? expressionById.get(firstStep.expressionId)
+                              ? resolveSequenceExpression(expressions, firstStep.expressionId)
+                                  .expression
                               : undefined
                             const card = (
                               <Button
@@ -1705,7 +1696,8 @@ export function StudioInspector({ controller }: { controller: StudioController }
                           {sequences.map(animation => {
                             const firstStep = animation.steps[0]
                             const firstExpression = firstStep
-                              ? expressionById.get(firstStep.expressionId)
+                              ? resolveSequenceExpression(expressions, firstStep.expressionId)
+                                  .expression
                               : undefined
                             return (
                               <Button
@@ -2017,20 +2009,21 @@ export function StudioInspector({ controller }: { controller: StudioController }
             <div className="state-playback-bar">
               <div className="state-playback-timeline">
                 {activeSequence.steps.map((step, position) => {
-                  const expressionIndex = findExpressionIndex(expressions, step.expressionId)
-                  const preset = expressions[expressionIndex]
-                  if (!preset) return null
+                  const resolved = resolveSequenceExpression(expressions, step.expressionId)
+                  if (!resolved.expression) return null
                   return (
                     <Button
                       className="state-playback-step"
                       variant="outline"
                       type="button"
                       key={step.id}
-                      aria-pressed={activeExpression === expressionIndex}
-                      onClick={() => transitionToExpression(preset, expressionIndex, step)}
+                      aria-pressed={activeExpression === resolved.index}
+                      onClick={() =>
+                        transitionToExpression(resolved.expression, resolved.index, step)
+                      }
                     >
                       <ExpressionPreview
-                        expression={preset}
+                        expression={resolved.expression}
                         surface={surface}
                         bodyNodes={bodyNodes}
                         colors={activeAvatar.colors}
