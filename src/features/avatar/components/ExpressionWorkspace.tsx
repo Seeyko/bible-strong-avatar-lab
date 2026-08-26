@@ -27,15 +27,22 @@ import { scaleEye, updateEyeDimension } from '@/features/avatar/expressionEditin
 import { type Expression } from '@/features/avatar/geometry'
 import { defaultExpression } from '@/features/avatar/presets'
 import { type SurfaceConfig } from '@/features/avatar/surfaces'
+import { OverlayPathList } from '@/features/rendering/components/OverlayPaths'
 import { StaticPixelAvatarCanvas } from '@/features/rendering/components/PixelAvatarCanvas'
 export function SurfaceThumbnail({ surface }: { surface: SurfaceConfig }) {
   const geometry = getPreviewGeometry(defaultExpression, surface, emptyBodyNodes)
   return (
-    <svg viewBox="-150 -150 300 300" aria-hidden="true">
+    <svg
+      className={geometry.overlays.length ? 'avatar-can' : undefined}
+      viewBox="-150 -150 300 300"
+      aria-hidden="true"
+    >
+      <OverlayPathList overlays={geometry.overlays} placement="back" />
       {geometry.backPaths.map((pathValue, index) => (
         <path d={pathValue} key={index} />
       ))}
       <path d={geometry.headPath} />
+      <OverlayPathList overlays={geometry.overlays} placement="front" />
     </svg>
   )
 }
@@ -82,12 +89,17 @@ export function ExpressionPreview({
   }
   const clipId = `preview-${id}`
   return (
-    <svg className="avatar-preview" viewBox="-150 -150 300 300" aria-hidden="true">
+    <svg
+      className={`avatar-preview${geometry.overlays.length ? ' avatar-can' : ''}`}
+      viewBox="-150 -150 300 300"
+      aria-hidden="true"
+    >
       <defs>
         <clipPath id={clipId}>
           <path d={geometry.headPath} />
         </clipPath>
       </defs>
+      <OverlayPathList overlays={geometry.overlays} placement="back" colors={resolvedColors} />
       {geometry.backPaths.map((pathValue, index) => (
         <path
           className="preview-head"
@@ -97,18 +109,18 @@ export function ExpressionPreview({
         />
       ))}
       <path className="preview-head" d={geometry.headPath} style={{ fill: resolvedColors.body }} />
-      <g clipPath={`url(#${clipId})`}>
+      <g clipPath={geometry.overlays.length ? undefined : `url(#${clipId})`}>
         <path
           className="preview-eye"
           d={geometry.leftPath}
           opacity={geometry.leftVisible ? 1 : 0}
-          style={{ fill: resolvedColors.eyes }}
+          style={{ fill: geometry.overlays.length ? '#fffef8' : resolvedColors.eyes }}
         />
         <path
           className="preview-eye"
           d={geometry.rightPath}
           opacity={geometry.rightVisible ? 1 : 0}
-          style={{ fill: resolvedColors.eyes }}
+          style={{ fill: geometry.overlays.length ? '#fffef8' : resolvedColors.eyes }}
         />
       </g>
       {geometry.frontPaths.map((pathValue, index) => (
@@ -119,6 +131,7 @@ export function ExpressionPreview({
           style={{ fill: resolvedColors.body }}
         />
       ))}
+      <OverlayPathList overlays={geometry.overlays} placement="front" colors={resolvedColors} />
     </svg>
   )
 }

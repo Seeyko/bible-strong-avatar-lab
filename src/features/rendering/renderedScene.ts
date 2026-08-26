@@ -1,4 +1,5 @@
 import { motionValue, type MotionValue } from 'motion'
+import { MAX_OVERLAY_PATHS, type OverlayLayer } from '@bible-strong/avatar-core'
 
 import type { AvatarColors } from '../avatar/avatars'
 import { MAX_BODY_NODES } from '../avatar/body'
@@ -17,6 +18,8 @@ export type RenderedScene = {
   offsetX: MotionValue<number>
   offsetY: MotionValue<number>
   wirePaths: MotionValue<string>[]
+  overlayPaths: MotionValue<string>[]
+  overlays: { current: OverlayLayer[] }
 }
 
 export type RenderedColors = {
@@ -43,6 +46,10 @@ export const createRenderedScene = (geometry: AvatarGeometry): RenderedScene => 
   offsetX: motionValue(0),
   offsetY: motionValue(0),
   wirePaths: geometry.wirePaths.map(path => motionValue(path)),
+  overlayPaths: Array.from({ length: MAX_OVERLAY_PATHS }, (_, index) =>
+    motionValue(geometry.overlays[index]?.d ?? '')
+  ),
+  overlays: { current: geometry.overlays },
 })
 
 export const createRenderedColors = (colors: AvatarColors): RenderedColors => ({
@@ -71,6 +78,8 @@ export const paintRenderedScene = (scene: RenderedScene, geometry: AvatarGeometr
   scene.leftOpacity.set(geometry.leftVisible ? 1 : 0)
   scene.rightOpacity.set(geometry.rightVisible ? 1 : 0)
   scene.wirePaths.forEach((path, index) => path.set(geometry.wirePaths[index] ?? ''))
+  scene.overlays.current = geometry.overlays
+  scene.overlayPaths.forEach((path, index) => path.set(geometry.overlays[index]?.d ?? ''))
 }
 
 export const findBodyNodePath = (scene: RenderedScene, selectedBodyNodeId: 'primary' | string) => {

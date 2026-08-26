@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { type AvatarDefinition } from '@bible-strong/avatar-core'
+import { MAX_BODY_NODES, MAX_OVERLAY_PATHS, type AvatarDefinition } from '@bible-strong/avatar-core'
 import { act, createRef, Profiler, StrictMode } from 'react'
 import { render } from '@testing-library/react'
 import { vi } from 'vitest'
@@ -99,7 +99,9 @@ describe('@bible-strong/avatar-react', () => {
     const view = render(<Avatar definition={definition} ariaLabel="Layered avatar" />)
     const svg = view.getByRole('img', { name: 'Layered avatar' }).querySelector('svg')
 
-    expect(svg?.querySelectorAll(':scope > path')).toHaveLength(37)
+    expect(svg?.querySelectorAll(':scope > path')).toHaveLength(
+      MAX_BODY_NODES + 2 + MAX_BODY_NODES + 2 + 1 + MAX_OVERLAY_PATHS * 2
+    )
   })
 
   it('exposes semantic imperative controls without Studio identifiers', () => {

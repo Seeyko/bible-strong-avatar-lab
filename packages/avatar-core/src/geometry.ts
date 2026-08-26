@@ -17,6 +17,16 @@ import {
   transformGraffitiPath,
   type GraffitiEyeId,
 } from './graffiti'
+import {
+  canBodyPath,
+  canLocalOverlays,
+  parseCanSpray,
+  pieEyeWedgePath,
+  pieEyeWhitePath,
+  transformCanOverlays,
+  transformPieEye,
+  type OverlayLayer,
+} from './rubberHose'
 
 export type Quaternion = readonly [number, number, number, number]
 export type Point3 = readonly [number, number, number]
@@ -77,6 +87,7 @@ export type AvatarGeometry = {
   leftVisible: boolean
   rightVisible: boolean
   wirePaths: string[]
+  overlays: OverlayLayer[]
 }
 
 export type RenderAvatarOptions = {
@@ -1138,7 +1149,7 @@ const projectedCapsulePath = (pose: AvatarPose, surface: SurfaceConfig) => {
   return smoothHullPath(convexHull([...ellipsePoints(top), ...ellipsePoints(bottom)]))
 }
 
-const graffitiDecalTransform = (pose: AvatarPose, surface: SurfaceConfig) => {
+const decalTransform = (pose: AvatarPose, surface: SurfaceConfig) => {
   const ellipse = projectedEllipsoid(pose, [
     surface.width / 2,
     surface.height / 2,
@@ -1156,7 +1167,81 @@ const graffitiDecalTransform = (pose: AvatarPose, surface: SurfaceConfig) => {
 
 const graffitiHeadPath = (pose: AvatarPose, surface: SurfaceConfig) => {
   const ringId = parseGraffitiRingId(surface.graffitiRing, DEFAULT_GRAFFITI_RING)
-  return transformGraffitiPath(graffitiRingPaths[ringId], graffitiDecalTransform(pose, surface))
+  return transformGraffitiPath(graffitiRingPaths[ringId], decalTransform(pose, surface))
+}
+
+const canHeadPath = (pose: AvatarPose, surface: SurfaceConfig) =>
+  canBodyPath(decalTransform(pose, surface))
+
+const canOverlays = (
+  pose: AvatarPose,
+  surface: SurfaceConfig,
+  blink: number,
+  offset: Readonly<{ x: number; y: number }> = { x: 0, y: 0 }
+) => {
+  const transform = decalTransform(pose, surface)
+  const overlays = transformCanOverlays(
+    canLocalOverlays(parseCanSpray(surface.canSpray)),
+    transform
+  )
+  const wedges = ([-1, 1] as const).flatMap(side => {
+    const suffix = side < 0 ? 'Left' : 'Right'
+    const width = pose.expression[`width${suffix}`]
+    const restingHeight = pose.expression[`height${suffix}`]
+    const height = 5 + (restingHeight - 5) * blink
+    const sample = projectFacePoint(
+      pose,
+      surface,
+      (side * pose.expression.spacing) / 2 + pose.expression[`positionX${suffix}`] + offset.x,
+      pose.expression[`positionY${suffix}`] + offset.y
+    )
+    if (sample.normal[2] <= 0) return []
+    const angle = radians(side < 0 ? pose.expression.leftAngle : pose.expression.rightAngle)
+    return [
+      {
+        d: transformPieEye(pieEyeWedgePath(width, height), {
+          centerX: sample.point[0],
+          centerY: sample.point[1],
+          scaleX: 1,
+          scaleY: 1,
+          rotation: angle,
+        }),
+        fill: 'ink' as const,
+        stroke: undefined,
+        strokeWidth: 0,
+        placement: 'front' as const,
+        fillRule: 'evenodd' as const,
+      },
+    ]
+  })
+  return [...overlays, ...wedges]
+}
+
+const canPieEyePath = (
+  pose: AvatarPose,
+  surface: SurfaceConfig,
+  side: -1 | 1,
+  blink: number,
+  offset: Readonly<{ x: number; y: number }> = { x: 0, y: 0 }
+) => {
+  const suffix = side < 0 ? 'Left' : 'Right'
+  const width = pose.expression[`width${suffix}`]
+  const restingHeight = pose.expression[`height${suffix}`]
+  const height = 5 + (restingHeight - 5) * blink
+  const center = projectFacePoint(
+    pose,
+    surface,
+    (side * pose.expression.spacing) / 2 + pose.expression[`positionX${suffix}`] + offset.x,
+    pose.expression[`positionY${suffix}`] + offset.y
+  ).point
+  const angle = radians(side < 0 ? pose.expression.leftAngle : pose.expression.rightAngle)
+  return transformPieEye(pieEyeWhitePath(width, height), {
+    centerX: center[0],
+    centerY: center[1],
+    scaleX: 1,
+    scaleY: 1,
+    rotation: angle,
+  })
 }
 
 const graffitiEyePath = (
@@ -1193,6 +1278,7 @@ const graffitiEyePath = (
 
 const headPath = (pose: AvatarPose, surface: SurfaceConfig) => {
   if (surface.type === 'graffiti') return graffitiHeadPath(pose, surface)
+  if (surface.type === 'can') return canHeadPath(pose, surface)
   if (surface.type === 'sphere' || surface.type === 'mickey') {
     const exactPath = projectedEllipsoidPath(pose, surface)
     if (exactPath) return exactPath
@@ -1322,16 +1408,26 @@ export const renderAvatar = (
   const accessories = accessoryLayers(pose, options.bodyNodes ?? [])
   const compositePaths = compositeBackPaths(pose, surface)
   const graffiti = surface.type === 'graffiti'
+  const can = surface.type === 'can'
   return {
     backPaths: [...compositePaths, ...accessories.backPaths],
     frontPaths: accessories.frontPaths,
     backNodeIds: [...compositePaths.map(() => null), ...accessories.backNodeIds],
     frontNodeIds: accessories.frontNodeIds,
     headPath: headPath(pose, surface),
-    leftPath: graffiti ? graffitiEyePath(pose, surface, -1, blink, options.eyeOffset) : path(left),
-    rightPath: graffiti ? graffitiEyePath(pose, surface, 1, blink, options.eyeOffset) : path(right),
+    leftPath: graffiti
+      ? graffitiEyePath(pose, surface, -1, blink, options.eyeOffset)
+      : can
+        ? canPieEyePath(pose, surface, -1, blink, options.eyeOffset)
+        : path(left),
+    rightPath: graffiti
+      ? graffitiEyePath(pose, surface, 1, blink, options.eyeOffset)
+      : can
+        ? canPieEyePath(pose, surface, 1, blink, options.eyeOffset)
+        : path(right),
     leftVisible: leftSamples.reduce((total, sample) => total + sample.normal[2], 0) > 0,
     rightVisible: rightSamples.reduce((total, sample) => total + sample.normal[2], 0) > 0,
     wirePaths: options.includeWire === false ? [] : wirePaths(pose, surface),
+    overlays: can ? canOverlays(pose, surface, blink, options.eyeOffset) : [],
   }
 }

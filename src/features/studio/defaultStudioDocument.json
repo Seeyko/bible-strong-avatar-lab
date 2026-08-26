@@ -5,36 +5,34 @@
     "avatars": [
       {
         "id": "strobi",
-        "name": "Strobi",
+        "name": "Can Kid",
         "body": {
           "primary": {
-            "type": "graffiti",
+            "type": "can",
             "width": 240,
             "height": 240,
             "depth": 240,
             "roundness": 1,
-            "graffitiRing": "uniform"
+            "canSpray": true
           },
           "nodes": []
         },
         "colors": {
-          "body": "#289bd2",
+          "body": "#ee682a",
           "eyes": "#111316"
         },
         "eyes": {
-          "widthLeft": 26,
-          "widthRight": 26,
-          "heightLeft": 32,
-          "heightRight": 32,
-          "spacing": 46,
+          "widthLeft": 32,
+          "widthRight": 32,
+          "heightLeft": 40,
+          "heightRight": 40,
+          "spacing": 44,
           "positionXLeft": 0,
           "positionXRight": 0,
           "positionYLeft": -10,
           "positionYRight": -10,
           "leftAngle": 0,
-          "rightAngle": 0,
-          "glyphLeft": "blob-07",
-          "glyphRight": "blob-06"
+          "rightAngle": 0
         }
       },
       {

@@ -1,3 +1,5 @@
+import { overlayPaint } from '@bible-strong/avatar-core'
+
 import type { AvatarColors } from '../avatar/avatars'
 import type { RenderedScene } from '../rendering/renderedScene'
 import {
@@ -28,8 +30,25 @@ const escapeXml = (value: string) =>
     return entities[character]
   })
 
-const path = (value: string, fill: string, opacity = 1) =>
-  value ? `<path d="${escapeXml(value)}" fill="${fill}" opacity="${opacity}"/>` : ''
+const path = (value: string, fill: string, opacity = 1, extra = '') =>
+  value ? `<path d="${escapeXml(value)}" fill="${fill}" opacity="${opacity}"${extra}/>` : ''
+
+const overlayMarkup = (
+  overlays: RenderedScene['overlays']['current'],
+  colors: AvatarColors,
+  placement: 'back' | 'front'
+) =>
+  overlays
+    .filter(overlay => overlay.placement === placement && overlay.d)
+    .map(overlay => {
+      const paint = overlayPaint(overlay, colors)
+      const stroke =
+        paint.stroke === 'none'
+          ? ''
+          : ` stroke="${paint.stroke}" stroke-width="${paint.strokeWidth}" stroke-linejoin="round" stroke-linecap="round"`
+      return `<path d="${escapeXml(paint.d)}" fill="${paint.fill}" fill-rule="${paint.fillRule}"${stroke}/>`
+    })
+    .join('')
 
 const backgroundMarkup = (options: SnapshotOptions) => {
   if (options.background === 'transparent') return ''
@@ -72,11 +91,23 @@ export const serializeAvatarSnapshot = (
   })
   const offsetX = scene.offsetX.get()
   const offsetY = scene.offsetY.get()
+  const overlays = scene.overlays.current
+  const canEyes = overlays.length > 0
+  const eyeFill = canEyes ? '#fffef8' : colors.eyes
+  const headStroke = canEyes
+    ? ' stroke="#111316" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"'
+    : ''
+  const eyeStroke = canEyes ? ' stroke="#111316" stroke-width="5" stroke-linejoin="round"' : ''
+  const eyeGroup = canEyes
+    ? `${path(scene.leftPath.get(), eyeFill, scene.leftOpacity.get(), eyeStroke)}${path(scene.rightPath.get(), eyeFill, scene.rightOpacity.get(), eyeStroke)}`
+    : `<g clip-path="url(#snapshot-head-clip)">${path(scene.leftPath.get(), eyeFill, scene.leftOpacity.get())}${path(scene.rightPath.get(), eyeFill, scene.rightOpacity.get())}</g>`
   const body = [
+    overlayMarkup(overlays, colors, 'back'),
     ...backPaths.map(value => path(value, colors.body)),
-    path(headPath, colors.body),
-    `<g clip-path="url(#snapshot-head-clip)">${path(scene.leftPath.get(), colors.eyes, scene.leftOpacity.get())}${path(scene.rightPath.get(), colors.eyes, scene.rightOpacity.get())}</g>`,
+    headPath ? `<path d="${escapeXml(headPath)}" fill="${colors.body}"${headStroke}/>` : '',
+    eyeGroup,
     ...frontPaths.map(value => path(value, colors.body)),
+    overlayMarkup(overlays, colors, 'front'),
   ].join('')
 
   return `<?xml version="1.0" encoding="UTF-8"?>

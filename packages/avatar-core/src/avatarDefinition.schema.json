@@ -75,7 +75,8 @@
             "cylinder",
             "cone",
             "diamond",
-            "graffiti"
+            "graffiti",
+            "can"
           ]
         },
         "width": { "$ref": "#/$defs/dimension" },
@@ -87,7 +88,8 @@
         "baseRoundness": { "$ref": "#/$defs/roundness" },
         "graffitiRing": {
           "enum": ["thick", "brush", "uniform-left", "uniform", "uniform-right"]
-        }
+        },
+        "canSpray": { "type": "boolean" }
       }
     },
     "nodeSurface": {

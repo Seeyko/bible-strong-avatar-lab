@@ -46,6 +46,7 @@ import { type SurfaceConfig } from '@/features/avatar/surfaces'
 import { type CanvasPreviewTarget } from '@/features/rendering/canvasPreview'
 import { LivePixelAvatarCanvas } from '@/features/rendering/components/PixelAvatarCanvas'
 import { type RenderedRotationGizmo } from '@/features/rendering/renderedRotationGizmo'
+import { OverlayPathList } from '@/features/rendering/components/OverlayPaths'
 import {
   findBodyNodePath,
   type RenderedColors,
@@ -559,6 +560,8 @@ export function AvatarCanvas({
     rightOpacity,
     offsetX,
     offsetY,
+    overlayPaths,
+    overlays,
   } = scene
   const svgRef = useRef<SVGSVGElement>(null)
   const [activeDragType, setActiveDragType] = useState<
@@ -795,7 +798,7 @@ export function AvatarCanvas({
       )}
       <svg
         ref={svgRef}
-        className="avatar"
+        className={`avatar${overlays.current.length ? ' avatar-can' : ''}`}
         viewBox="-150 -150 300 300"
         role="img"
         aria-label={t('Avatar procédural')}
@@ -807,8 +810,27 @@ export function AvatarCanvas({
           <clipPath id="avatar-head-clip">
             <motion.path d={headPath} />
           </clipPath>
+          {overlays.current.length > 0 && (
+            <filter id="avatar-paper-grain" x="-20%" y="-20%" width="140%" height="140%">
+              <feTurbulence
+                type="fractalNoise"
+                baseFrequency="0.85"
+                numOctaves="3"
+                result="grain"
+              />
+              <feColorMatrix type="saturate" values="0" in="grain" result="mono" />
+              <feComponentTransfer in="mono" result="soft">
+                <feFuncA type="table" tableValues="0 0.14" />
+              </feComponentTransfer>
+              <feBlend in="SourceGraphic" in2="soft" mode="multiply" />
+            </filter>
+          )}
         </defs>
-        <motion.g style={{ x: offsetX, y: offsetY }}>
+        <motion.g
+          style={{ x: offsetX, y: offsetY }}
+          filter={overlays.current.length ? 'url(#avatar-paper-grain)' : undefined}
+        >
+          <OverlayPathList overlays={overlays.current} paths={overlayPaths} placement="back" />
           {backPaths.map((pathValue, index) => (
             <motion.path
               className={`avatar-head ${highlight === 'head' ? 'cyan-outline' : ''}`}
@@ -825,7 +847,7 @@ export function AvatarCanvas({
               startDrag(event)
             }}
           />
-          <g clipPath="url(#avatar-head-clip)">
+          <g clipPath={overlays.current.length ? undefined : 'url(#avatar-head-clip)'}>
             {(showWire || highlight === 'head') &&
               wirePaths.map((pathValue, index) => (
                 <motion.path className="wire" d={pathValue} key={index} />
@@ -851,6 +873,7 @@ export function AvatarCanvas({
               onPointerDown={event => selectBodyPath(event, frontNodeIds.current[index])}
             />
           ))}
+          <OverlayPathList overlays={overlays.current} paths={overlayPaths} placement="front" />
         </motion.g>
         {selectedBodyPath && (
           <motion.path className="selection-outline body-selection-outline" d={selectedBodyPath} />

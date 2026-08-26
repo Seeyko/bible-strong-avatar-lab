@@ -828,7 +828,8 @@ export function StudioInspector({ controller }: { controller: StudioController }
                           value={activeAvatar.colors.body}
                           onChange={body => updateAvatarColors({ body })}
                         />
-                        {activeAvatar.body.primary.type === 'graffiti' && (
+                        {(activeAvatar.body.primary.type === 'graffiti' ||
+                          activeAvatar.body.primary.type === 'can') && (
                           <GraffitiColorTokens
                             value={activeAvatar.colors.body}
                             onChange={body => updateAvatarColors({ body })}

@@ -50,7 +50,7 @@ function Demo() {
           definition={definition}
           expression={expression}
           size={240}
-          ariaLabel="Embedded Strobi avatar"
+          ariaLabel="Embedded Can Kid avatar"
         />
       </section>
       <section className="expression-picker" aria-labelledby="expression-picker-title">
@@ -87,7 +87,7 @@ function Demo() {
           definition={definition}
           expression={expression}
           size={128}
-          ariaLabel="Positioned Strobi avatar"
+          ariaLabel="Positioned Can Kid avatar"
         />
       </div>
     </main>
