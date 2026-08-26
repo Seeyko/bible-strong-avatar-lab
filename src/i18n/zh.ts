@@ -529,7 +529,11 @@ export const chinese: Record<string, string> = {
   'Jambe arrière': '后腿',
   'Jambe avant': '前腿',
   'Oriente le corps, la tête, le spray et les yeux ensemble.': '同时转动身体、头部、喷雾和眼睛。',
+  'La tête penche la bombe. Les membres pivotent tout seuls.':
+    '头部只倾斜喷罐。四肢单独绕关节转动。',
   'Les quatre membres tournent autour de leur épaule ou hanche.': '四条肢体绕各自的肩或髋旋转。',
+  'Pas rubber-hose : les jambes et les bras s’inversent à chaque pas.':
+    '橡胶管步伐：手臂和腿每一步左右交替。',
   Masqué: '隐藏',
   Visible: '显示',
   'Anneau graffiti': '涂鸦圆环',
@@ -592,6 +596,7 @@ export const chinese: Record<string, string> = {
   sleeping: '睡眠',
   waking: '醒来',
   idle: '待机',
+  walk: '走路',
   listening: '聆听',
   thinking: '思考',
   searching: '搜索',

@@ -488,8 +488,9 @@ describe('Studio to avatar definition conversion', () => {
     if (!result.ok) return
     expect(result.value.expressionOrder).toHaveLength(29)
     expect(result.value.expressionOrder[0]).toBe('neutral')
-    expect(result.value.animationOrder).toHaveLength(23)
+    expect(result.value.animationOrder).toHaveLength(24)
     expect(result.value.animationOrder).toContain('idle')
+    expect(result.value.animationOrder).toContain('walk')
     expect(result.value.animations.idle.steps.map(step => step.expression)).toEqual([
       'upward-side-glance',
       'curious-left',

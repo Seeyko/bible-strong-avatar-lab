@@ -1375,6 +1375,38 @@
       }
     },
     {
+      "id": "walk",
+      "semanticKey": "walk",
+      "name": "walk",
+      "group": "Cycle de vie",
+      "description": "Pas rubber-hose : les jambes et les bras s’inversent à chaque pas.",
+      "builtIn": true,
+      "playbackMode": "loop",
+      "steps": [
+        {
+          "id": "walk-step-0",
+          "expressionId": "expression-01",
+          "holdMs": 360,
+          "transitionMs": 180,
+          "transition": "smooth"
+        },
+        {
+          "id": "walk-step-1",
+          "expressionId": "expression-07",
+          "holdMs": 360,
+          "transitionMs": 180,
+          "transition": "smooth"
+        }
+      ],
+      "blink": {
+        "enabled": true,
+        "initialDelayMs": 2100,
+        "minIntervalMs": 2800,
+        "maxIntervalMs": 5000,
+        "durationMs": 260
+      }
+    },
+    {
       "id": "listening",
       "semanticKey": "listening",
       "name": "listening",

@@ -163,7 +163,7 @@ function PoseControls({ controller }: { controller: StudioController }) {
             title="Rotation de la tête"
             subtitle={
               activeAvatar.body.primary.type === 'can'
-                ? 'Oriente le corps, la tête, le spray et les yeux ensemble.'
+                ? 'La tête penche la bombe. Les membres pivotent tout seuls.'
                 : 'Les libellés ↔ sont scrubbables, comme dans Figma.'
             }
           />

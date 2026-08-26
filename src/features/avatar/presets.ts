@@ -117,7 +117,16 @@ export const defaultExpression: Expression = {
 }
 
 export const stateGroups = {
-  'Cycle de vie': ['sleeping', 'waking', 'idle', 'listening', 'thinking', 'searching', 'working'],
+  'Cycle de vie': [
+    'sleeping',
+    'waking',
+    'idle',
+    'walk',
+    'listening',
+    'thinking',
+    'searching',
+    'working',
+  ],
   Réactions: [
     'excited',
     'surprised',
@@ -142,6 +151,7 @@ export const statePools: Record<string, number[]> = {
   sleeping: [13, 22, 4],
   waking: [13],
   idle: [0, 8],
+  walk: [1, 7],
   listening: [10, 1, 19],
   thinking: [8, 16, 14, 17, 5],
   searching: [15, 9, 3, 20, 12, 18],
@@ -230,7 +240,8 @@ export const getStatePlaybackConfig = (name: string): StatePlaybackConfig => {
             ? blinkProfiles.reactive
             : blinkProfiles.active
   return {
-    expressionIntervalMs: name === 'idle' ? 5200 : calmStates.has(name) ? 3600 : 2300,
+    expressionIntervalMs:
+      name === 'walk' ? 360 : name === 'idle' ? 5200 : calmStates.has(name) ? 3600 : 2300,
     blink: { ...blink },
   }
 }
@@ -239,6 +250,7 @@ export const stateNotes: Record<string, string> = {
   sleeping: 'Yeux presque fermés, respiration lente et expression de sommeil.',
   waking: 'Animation courte de réveil avant retour vers une expression neutre.',
   idle: 'Micro-mouvements lents, expressions 00 et 08, clignement rare.',
+  walk: 'Pas rubber-hose : les jambes et les bras s’inversent à chaque pas.',
   listening: 'Expressions 10, 01 et 19, regard stable et clignement attentif.',
   thinking: 'Regard haut et latéral, expressions asymétriques et changements fréquents.',
   searching: 'Balayage rapide et changements très fréquents.',

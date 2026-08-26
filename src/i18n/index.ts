@@ -582,8 +582,12 @@ const english: Record<string, string> = {
   'Jambe avant': 'Front leg',
   'Oriente le corps, la tête, le spray et les yeux ensemble.':
     'Orients the body, head, spray and eyes together.',
+  'La tête penche la bombe. Les membres pivotent tout seuls.':
+    'The head tilts the can. The limbs pivot on their own.',
   'Les quatre membres tournent autour de leur épaule ou hanche.':
     'The four limbs rotate around their shoulder or hip.',
+  'Pas rubber-hose : les jambes et les bras s’inversent à chaque pas.':
+    'Rubber-hose walk: legs and arms swap on each step.',
   Masqué: 'Hidden',
   Visible: 'Visible',
   'Anneau graffiti': 'Graffiti ring',
@@ -642,6 +646,7 @@ const english: Record<string, string> = {
   sleeping: 'sleeping',
   waking: 'waking',
   idle: 'idle',
+  walk: 'walk',
   listening: 'listening',
   thinking: 'thinking',
   searching: 'searching',
@@ -695,6 +700,7 @@ const frenchStates: Record<string, string> = {
   sleeping: 'sommeil',
   waking: 'réveil',
   idle: 'au repos',
+  walk: 'marche',
   listening: 'écoute',
   thinking: 'réflexion',
   searching: 'recherche',

@@ -17,6 +17,7 @@ describe('bundled RMP rubber-hose default', () => {
     expect(avatar.body.nodes).toEqual([])
     expect(avatar.colors.body).toBe(GRAFFITI_COLOR_TOKENS.session)
     expect(avatar.colors.eyes).toBe('#111316')
+    expect(document.sequences.some(sequence => sequence.id === 'walk')).toBe(true)
   })
 
   it('exports the can default without breaking the definition schema', () => {
