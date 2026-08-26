@@ -220,6 +220,30 @@ function PoseControls({ controller }: { controller: StudioController }) {
               unit="°"
               onChange={value => updateImmediate({ ...expression, legFront: value })}
             />
+            <NumericField
+              label="Jet de spray"
+              value={expression.spray ?? 0}
+              min={0}
+              max={1}
+              step={0.01}
+              onChange={value => updateImmediate({ ...expression, spray: value })}
+            />
+            <NumericField
+              label="Badge succès"
+              value={expression.badge ?? 0}
+              min={0}
+              max={1}
+              step={0.01}
+              onChange={value => updateImmediate({ ...expression, badge: value })}
+            />
+            <NumericField
+              label="Position de scène"
+              value={expression.stageX ?? 0}
+              unit="px"
+              min={-160}
+              max={160}
+              onChange={value => updateImmediate({ ...expression, stageX: value })}
+            />
           </InspectorCard>
         )}
       </ControlSection>

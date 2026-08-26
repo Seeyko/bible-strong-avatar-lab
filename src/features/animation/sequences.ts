@@ -1,4 +1,5 @@
 import {
+  canKidClipExpressions,
   defaultExpression,
   getStatePlaybackConfig,
   initialExpressions,
@@ -48,7 +49,144 @@ export type SequenceCursor = {
 
 const playbackModes: SequencePlaybackMode[] = ['loop', 'once', 'pingPong']
 const transitions: SequenceTransition[] = ['spring', 'smooth', 'snappy']
-const builtInSequenceIds = new Set<string>(Object.values(stateGroups).flat())
+export const canKidClipSequenceIds = ['enter', 'paint', 'spray-off', 'leave'] as const
+
+const builtInSequenceIds = new Set<string>([
+  ...Object.values(stateGroups).flat(),
+  ...canKidClipSequenceIds,
+])
+
+const clipExpressionId = (id: string) =>
+  canKidClipExpressions.find(expression => expression.id === id)?.id ?? initialExpressions[0].id
+
+const canKidClipBlink: BlinkSettings = {
+  enabled: true,
+  initialDelayMs: 2100,
+  minIntervalMs: 2800,
+  maxIntervalMs: 5000,
+  durationMs: 260,
+}
+
+export const createCanKidSequences = (): AvatarSequence[] => [
+  {
+    id: 'enter',
+    semanticKey: 'enter',
+    name: 'enter',
+    group: 'Can Kid',
+    description: stateNotes.enter,
+    builtIn: true,
+    playbackMode: 'once',
+    steps: [
+      {
+        id: 'enter-step-0',
+        expressionId: clipExpressionId('expression-can-enter-l'),
+        holdMs: 280,
+        transitionMs: 420,
+        transition: 'smooth',
+      },
+      {
+        id: 'enter-step-1',
+        expressionId: clipExpressionId('expression-can-enter-r'),
+        holdMs: 280,
+        transitionMs: 420,
+        transition: 'smooth',
+      },
+      {
+        id: 'enter-step-2',
+        expressionId: clipExpressionId('expression-can-enter-settle'),
+        holdMs: 520,
+        transitionMs: 360,
+        transition: 'smooth',
+      },
+    ],
+    blink: { ...canKidClipBlink },
+  },
+  {
+    id: 'paint',
+    semanticKey: 'paint',
+    name: 'paint',
+    group: 'Can Kid',
+    description: stateNotes.paint,
+    builtIn: true,
+    playbackMode: 'once',
+    steps: [
+      {
+        id: 'paint-step-0',
+        expressionId: clipExpressionId('expression-can-paint-aim'),
+        holdMs: 360,
+        transitionMs: 280,
+        transition: 'smooth',
+      },
+      {
+        id: 'paint-step-1',
+        expressionId: clipExpressionId('expression-can-paint-stream'),
+        holdMs: 480,
+        transitionMs: 320,
+        transition: 'smooth',
+      },
+      {
+        id: 'paint-step-2',
+        expressionId: clipExpressionId('expression-can-paint-hit'),
+        holdMs: 900,
+        transitionMs: 360,
+        transition: 'smooth',
+      },
+    ],
+    blink: { ...canKidClipBlink },
+  },
+  {
+    id: 'spray-off',
+    semanticKey: 'spray-off',
+    name: 'spray-off',
+    group: 'Can Kid',
+    description: stateNotes['spray-off'],
+    builtIn: true,
+    playbackMode: 'once',
+    steps: [
+      {
+        id: 'spray-off-step-0',
+        expressionId: clipExpressionId('expression-can-paint-hit'),
+        holdMs: 220,
+        transitionMs: 240,
+        transition: 'smooth',
+      },
+      {
+        id: 'spray-off-step-1',
+        expressionId: clipExpressionId('expression-can-spray-off'),
+        holdMs: 720,
+        transitionMs: 400,
+        transition: 'smooth',
+      },
+    ],
+    blink: { ...canKidClipBlink },
+  },
+  {
+    id: 'leave',
+    semanticKey: 'leave',
+    name: 'leave',
+    group: 'Can Kid',
+    description: stateNotes.leave,
+    builtIn: true,
+    playbackMode: 'once',
+    steps: [
+      {
+        id: 'leave-step-0',
+        expressionId: clipExpressionId('expression-can-leave-l'),
+        holdMs: 280,
+        transitionMs: 420,
+        transition: 'smooth',
+      },
+      {
+        id: 'leave-step-1',
+        expressionId: clipExpressionId('expression-can-leave-r'),
+        holdMs: 420,
+        transitionMs: 420,
+        transition: 'smooth',
+      },
+    ],
+    blink: { ...canKidClipBlink },
+  },
+]
 
 const finite = (value: unknown, fallback: number, min: number, max: number) =>
   typeof value === 'number' && Number.isFinite(value)
@@ -64,8 +202,8 @@ const cloneSequence = (sequence: AvatarSequence): AvatarSequence => ({
   blink: { ...sequence.blink },
 })
 
-export const createInitialSequences = (): AvatarSequence[] =>
-  Object.entries(stateGroups).flatMap(([group, stateIds]) =>
+export const createInitialSequences = (): AvatarSequence[] => [
+  ...Object.entries(stateGroups).flatMap(([group, stateIds]) =>
     stateIds.map(id => {
       const playback = getStatePlaybackConfig(id)
       return {
@@ -76,18 +214,20 @@ export const createInitialSequences = (): AvatarSequence[] =>
         description:
           stateNotes[id] ?? 'Cette animation enchaîne un pool de presets et des clignements.',
         builtIn: true,
-        playbackMode: 'loop',
+        playbackMode: 'loop' as const,
         steps: (statePools[id] ?? [0]).map((expressionIndex, index) => ({
           id: `${id}-step-${index}`,
           expressionId: initialExpressions[expressionIndex]?.id ?? initialExpressions[0].id,
           holdMs: playback.expressionIntervalMs,
-          transitionMs: 500,
-          transition: 'smooth',
+          transitionMs: id === 'walk' ? 180 : 500,
+          transition: 'smooth' as const,
         })),
         blink: { enabled: true, ...playback.blink },
       }
     })
-  )
+  ),
+  ...createCanKidSequences(),
+]
 
 const parseStep = (value: unknown, fallback: SequenceStep): SequenceStep => {
   const candidate = value as Partial<SequenceStep> | null

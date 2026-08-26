@@ -90,12 +90,14 @@ describe('canonical Can Kid SVG hook', () => {
     expect(geometry.rightPath).toBe('')
     expect(geometry.canonicalCan?.innerMarkup).toContain('data-rmp-part="can"')
     expect(geometry.canonicalCan?.innerMarkup).toContain('data-rmp-part="eyes"')
-    expect(geometry.canonicalCan?.innerMarkup).toContain('data-rmp-part="spray"')
+    expect(geometry.canonicalCan?.innerMarkup).toContain('data-rmp-part="stage"')
+    expect(geometry.canonicalCan?.innerMarkup).not.toContain('data-rmp-part="spray"')
+    expect(geometry.canonicalCan?.innerMarkup).not.toContain('data-rmp-part="badge"')
     expect(geometry.canonicalCan?.innerMarkup).toContain('data-rmp-procedural="limb"')
     expect(geometry.canonicalCan?.innerMarkup).toContain('data-rmp-part="mouth"')
   })
 
-  it('hides the spray group when canSpray is off', () => {
+  it('keeps the jet off on idle even when the body can spray', () => {
     const hidden = renderAvatar(
       poseFromExpression(idle),
       { ...surfacePresets.can, canSpray: false },
@@ -103,6 +105,34 @@ describe('canonical Can Kid SVG hook', () => {
     )
     expect(hidden.canonicalCan?.innerMarkup).not.toContain('data-rmp-part="spray"')
     expect(hidden.canonicalCan?.innerMarkup).toContain('data-rmp-part="body"')
+  })
+
+  it('grows a procedural jet and paints a success badge from clip fields', () => {
+    const painted = renderAvatar(
+      poseFromExpression({ ...idle, spray: 1, badge: 1, stageX: 40 }),
+      surfacePresets.can,
+      1
+    )
+    const markup = painted.canonicalCan?.innerMarkup ?? ''
+    expect(markup).toContain('data-rmp-part="spray"')
+    expect(markup).toContain('data-rmp-spray="1.000"')
+    expect(markup).toContain('data-rmp-part="badge"')
+    expect(markup).toContain('succès')
+    expect(markup).toContain('data-rmp-part="stage"')
+    expect(markup).toContain('translate(40.00 0)')
+    const canOpen = markup.indexOf('data-rmp-part="can"')
+    const canClose = markup.indexOf('data-rmp-part="arm-point"')
+    expect(markup.slice(canOpen, canClose)).not.toContain('data-rmp-part="spray"')
+  })
+
+  it('refuses the jet when the body cannot spray, even if the clip asks for it', () => {
+    const blocked = renderAvatar(
+      poseFromExpression({ ...idle, spray: 1, badge: 1 }),
+      { ...surfacePresets.can, canSpray: false },
+      1
+    )
+    expect(blocked.canonicalCan?.innerMarkup).not.toContain('data-rmp-part="spray"')
+    expect(blocked.canonicalCan?.innerMarkup).not.toContain('data-rmp-part="badge"')
   })
 
   it('leans the can without wrapping the four limbs in the same sticker rotate', () => {
@@ -130,7 +160,7 @@ describe('canonical Can Kid SVG hook', () => {
     expect(canMarkup).toContain('rotate(18')
     expect(canMarkup).toContain('data-rmp-part="body"')
     expect(canMarkup).toContain('data-rmp-part="eyes"')
-    expect(canMarkup).toContain('data-rmp-part="spray"')
+    expect(canMarkup).not.toContain('data-rmp-part="spray"')
     expect(canMarkup).not.toContain('data-rmp-part="arm-hip"')
     expect(canMarkup).not.toContain('data-rmp-part="leg-front"')
     expect(posed).toContain('data-rmp-procedural="limb"')

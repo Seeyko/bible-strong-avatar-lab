@@ -24,7 +24,7 @@ const canExpression: Expression = {
 }
 
 describe('RMP rubber-hose can', () => {
-  it('locks the can preset to session orange and a visible spray puff', () => {
+  it('locks the can preset to session orange with spray as a body capability', () => {
     expect(DEFAULT_CAN_SPRAY).toBe(true)
     expect(parseCanSpray(undefined)).toBe(true)
     expect(surfacePresets.can.type).toBe('can')
@@ -62,14 +62,21 @@ describe('RMP rubber-hose can', () => {
     expect(geometry.rightVisible).toBe(false)
   })
 
-  it('hides the spray puff when canSpray is off', () => {
-    const withSpray = renderAvatar(poseFromExpression(canExpression), surfacePresets.can, 1)
-    const withoutSpray = renderAvatar(
-      poseFromExpression(canExpression),
+  it('hides the spray until a paint clip turns the jet on', () => {
+    const idle = renderAvatar(poseFromExpression(canExpression), surfacePresets.can, 1)
+    const painting = renderAvatar(
+      poseFromExpression({ ...canExpression, spray: 1, badge: 1 }),
+      surfacePresets.can,
+      1
+    )
+    const withoutCapability = renderAvatar(
+      poseFromExpression({ ...canExpression, spray: 1, badge: 1 }),
       { ...surfacePresets.can, canSpray: false },
       1
     )
-    expect(withSpray.canonicalCan?.innerMarkup).toContain('data-rmp-part="spray"')
-    expect(withoutSpray.canonicalCan?.innerMarkup).not.toContain('data-rmp-part="spray"')
+    expect(idle.canonicalCan?.innerMarkup).not.toContain('data-rmp-part="spray"')
+    expect(painting.canonicalCan?.innerMarkup).toContain('data-rmp-part="spray"')
+    expect(painting.canonicalCan?.innerMarkup).toContain('succès')
+    expect(withoutCapability.canonicalCan?.innerMarkup).not.toContain('data-rmp-part="spray"')
   })
 })

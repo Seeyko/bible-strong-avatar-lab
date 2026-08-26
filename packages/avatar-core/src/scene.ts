@@ -32,6 +32,13 @@ export const expressionFromDefinition = (
   bodyMotion: expression.motion.body,
   ...(expression.colors?.body ? { bodyColor: expression.colors.body } : {}),
   ...(expression.colors?.eyes ? { eyeColor: expression.colors.eyes } : {}),
+  ...(expression.hose?.armHip !== undefined ? { armHip: expression.hose.armHip } : {}),
+  ...(expression.hose?.armPoint !== undefined ? { armPoint: expression.hose.armPoint } : {}),
+  ...(expression.hose?.legBack !== undefined ? { legBack: expression.hose.legBack } : {}),
+  ...(expression.hose?.legFront !== undefined ? { legFront: expression.hose.legFront } : {}),
+  ...(expression.hose?.spray !== undefined ? { spray: expression.hose.spray } : {}),
+  ...(expression.hose?.badge !== undefined ? { badge: expression.hose.badge } : {}),
+  ...(expression.hose?.stageX !== undefined ? { stageX: expression.hose.stageX } : {}),
 })
 
 export const bodyFromDefinition = (body: AvatarBodyDefinition): AvatarBody => ({

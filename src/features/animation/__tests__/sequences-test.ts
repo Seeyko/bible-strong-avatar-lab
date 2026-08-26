@@ -22,6 +22,28 @@ describe('editable avatar sequences', () => {
     expect(idle?.blink.durationMs).toBe(280)
   })
 
+  it('ships Can Kid paint clips as once-only reusable animations', () => {
+    const sequences = createInitialSequences()
+    const paint = sequences.find(sequence => sequence.id === 'paint')
+    const enter = sequences.find(sequence => sequence.id === 'enter')
+    const sprayOff = sequences.find(sequence => sequence.id === 'spray-off')
+
+    expect(paint?.playbackMode).toBe('once')
+    expect(enter?.playbackMode).toBe('once')
+    expect(sprayOff?.playbackMode).toBe('once')
+    expect(paint?.steps.map(step => step.expressionId)).toEqual([
+      'expression-can-paint-aim',
+      'expression-can-paint-stream',
+      'expression-can-paint-hit',
+    ])
+    expect(
+      initialExpressions.find(expression => expression.id === 'expression-can-paint-stream')?.spray
+    ).toBe(0.42)
+    expect(
+      initialExpressions.find(expression => expression.id === 'expression-can-paint-hit')?.badge
+    ).toBe(1)
+  })
+
   it('supports loop, once and ping-pong playback cursors', () => {
     const base = createInitialSequences().find(sequence => sequence.id === 'listening')!
 

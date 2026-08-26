@@ -534,6 +534,14 @@ export const chinese: Record<string, string> = {
   'Les quatre membres tournent autour de leur épaule ou hanche.': '四条肢体绕各自的肩或髋旋转。',
   'Pas rubber-hose : les jambes et les bras s’inversent à chaque pas.':
     '橡胶管步伐：手臂和腿每一步左右交替。',
+  'Jet de spray': '喷漆射流',
+  'Badge succès': '成功徽章',
+  'Position de scène': '舞台位置',
+  'Le jet part, puis s’arrête. Ce n’est pas un calque collé.':
+    '射流开始然后停止。它不是贴在角色上的图层。',
+  'Peinture au spray': '喷漆绘画',
+  Autorisé: '允许',
+  Interdit: '关闭',
   Masqué: '隐藏',
   Visible: '显示',
   'Anneau graffiti': '涂鸦圆环',
@@ -575,6 +583,13 @@ export const chinese: Record<string, string> = {
     '短暂的醒来动画，然后恢复中性表情。',
   'Micro-mouvements lents, expressions 00 et 08, clignement rare.':
     '缓慢微动，使用表情 00 和 08，偶尔眨眼。',
+  'Membres qui se balancent, un seul visage, aucun jet collé.':
+    '四肢摆动，只有一张脸，没有贴死的喷漆。',
+  'Arrive en marchant, membres rubber-hose, puis s’arrête.': '橡胶管步伐进场，然后停下。',
+  'Le spray part, peint un badge « succès », le jet reste une animation.':
+    '喷漆射出，画上“succès”徽章，射流只是一段动画。',
+  'Range le jet. Le badge reste posé.': '收起喷漆。徽章留在原处。',
+  'Repart en marchant, membres rubber-hose.': '橡胶管步伐离场。',
   'Expressions 10, 01 et 19, regard stable et clignement attentif.':
     '使用表情 10、01 和 19，视线稳定并专注眨眼。',
   'Regard haut et latéral, expressions asymétriques et changements fréquents.':
@@ -597,6 +612,11 @@ export const chinese: Record<string, string> = {
   waking: '醒来',
   idle: '待机',
   walk: '走路',
+  enter: '进场',
+  paint: '喷绘',
+  'spray-off': '收起喷漆',
+  leave: '离场',
+  'Can Kid': 'Can Kid',
   listening: '聆听',
   thinking: '思考',
   searching: '搜索',

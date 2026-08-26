@@ -1,4 +1,5 @@
 const SESSION_ORANGE = '#ee682a'
+const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value))
 
 export const CAN_LIMB_INK = '#111316'
 export const CAN_LIMB_PAPER = '#fffef8'
@@ -161,4 +162,47 @@ export const proceduralCanonicalCanLimbMarkup = (part: keyof typeof CANONICAL_CA
     rest.width
   )
   return `${fill(tube, CAN_LIMB_INK, 'ink')}${limbTip(rest)}`
+}
+
+export const proceduralCanonicalCanSprayMarkup = (progress: number): string => {
+  const amount = clamp(progress, 0, 1)
+  if (amount <= 0.01) return ''
+
+  const stream = clamp(amount / 0.35, 0, 1)
+  const puff = clamp((amount - 0.32) / 0.38, 0, 1)
+  const mist = clamp((amount - 0.68) / 0.32, 0, 1)
+  const streamLength = 28 + stream * 118
+  const puffScale = 0.18 + puff * 0.82
+  const puffOpacity = puff * 0.92
+  const mistOpacity = mist * 0.55
+
+  return [
+    `<g data-rmp-part="spray" data-rmp-spray="${amount.toFixed(3)}" transform="translate(400 198)">`,
+    `<path d="M0 2 C ${round(streamLength * 0.42)} -6 ${round(streamLength * 0.72)} 4 ${round(streamLength)} 1" fill="none" stroke="#f4f1ea" stroke-linecap="round" stroke-width="${round(4.5 + stream * 3.5)}" opacity="${(0.35 + stream * 0.55).toFixed(3)}"/>`,
+    `<g transform="translate(${round(streamLength)} 0) scale(${puffScale.toFixed(3)})" opacity="${puffOpacity.toFixed(3)}">`,
+    `<ellipse cx="18" cy="-6" rx="34" ry="22" fill="#f7f4ee"/>`,
+    `<ellipse cx="46" cy="8" rx="26" ry="18" fill="#efeae0"/>`,
+    `<ellipse cx="8" cy="16" rx="20" ry="14" fill="#f4f0e8"/>`,
+    `</g>`,
+    `<g transform="translate(${round(streamLength + 54)} 18)" opacity="${mistOpacity.toFixed(3)}">`,
+    `<circle cx="0" cy="0" r="6" fill="#f4f1ea"/>`,
+    `<circle cx="16" cy="10" r="4.5" fill="#efeae0"/>`,
+    `<circle cx="28" cy="-4" r="3.5" fill="#f7f4ee"/>`,
+    `</g>`,
+    `</g>`,
+  ].join('')
+}
+
+export const canonicalCanBadgeMarkup = (progress: number): string => {
+  const amount = clamp(progress, 0, 1)
+  if (amount <= 0.01) return ''
+
+  const scale = 0.2 + amount * 0.8
+  return [
+    `<g data-rmp-part="badge" data-rmp-badge="${amount.toFixed(3)}" transform="translate(596 188) scale(${scale.toFixed(3)})" opacity="${amount.toFixed(3)}">`,
+    `<circle cx="0" cy="0" r="42" fill="#f4d35e" stroke="#1a1714" stroke-width="6"/>`,
+    `<circle cx="0" cy="0" r="32" fill="#fff8e7"/>`,
+    `<text x="0" y="6" text-anchor="middle" font-family="ui-rounded, 'Trebuchet MS', sans-serif" font-size="16" font-weight="700" fill="#1a1714">succès</text>`,
+    `</g>`,
+  ].join('')
 }

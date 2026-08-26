@@ -588,6 +588,14 @@ const english: Record<string, string> = {
     'The four limbs rotate around their shoulder or hip.',
   'Pas rubber-hose : les jambes et les bras s’inversent à chaque pas.':
     'Rubber-hose walk: legs and arms swap on each step.',
+  'Jet de spray': 'Spray jet',
+  'Badge succès': 'Success badge',
+  'Position de scène': 'Stage position',
+  'Le jet part, puis s’arrête. Ce n’est pas un calque collé.':
+    'The jet starts, then stops. It is not a glued-on layer.',
+  'Peinture au spray': 'Spray painting',
+  Autorisé: 'Allowed',
+  Interdit: 'Off',
   Masqué: 'Hidden',
   Visible: 'Visible',
   'Anneau graffiti': 'Graffiti ring',
@@ -629,6 +637,14 @@ const english: Record<string, string> = {
     'Short waking animation before returning to a neutral expression.',
   'Micro-mouvements lents, expressions 00 et 08, clignement rare.':
     'Slow micro-movements, expressions 00 and 08, infrequent blinking.',
+  'Membres qui se balancent, un seul visage, aucun jet collé.':
+    'Limbs swaying, one face, no glued-on jet.',
+  'Arrive en marchant, membres rubber-hose, puis s’arrête.':
+    'Walks in on rubber-hose limbs, then settles.',
+  'Le spray part, peint un badge « succès », le jet reste une animation.':
+    'The spray starts, paints a “succès” badge, then the jet is just an animation.',
+  'Range le jet. Le badge reste posé.': 'Puts the jet away. The badge stays.',
+  'Repart en marchant, membres rubber-hose.': 'Walks off on rubber-hose limbs.',
   'Expressions 10, 01 et 19, regard stable et clignement attentif.':
     'Expressions 10, 01 and 19, steady gaze and attentive blinking.',
   'Regard haut et latéral, expressions asymétriques et changements fréquents.':
@@ -647,6 +663,11 @@ const english: Record<string, string> = {
   waking: 'waking',
   idle: 'idle',
   walk: 'walk',
+  enter: 'enter',
+  paint: 'paint',
+  'spray-off': 'spray off',
+  leave: 'leave',
+  'Can Kid': 'Can Kid',
   listening: 'listening',
   thinking: 'thinking',
   searching: 'searching',
@@ -701,6 +722,11 @@ const frenchStates: Record<string, string> = {
   waking: 'réveil',
   idle: 'au repos',
   walk: 'marche',
+  enter: 'arrivée',
+  paint: 'peinture',
+  'spray-off': 'range le jet',
+  leave: 'départ',
+  'Can Kid': 'Can Kid',
   listening: 'écoute',
   thinking: 'réflexion',
   searching: 'recherche',

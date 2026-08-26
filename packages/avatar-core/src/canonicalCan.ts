@@ -1,10 +1,12 @@
 import canonicalCanSvgSource from './assets/can-kid.svg?raw'
 import {
   CANONICAL_CAN_LIMB_RESTS,
+  canonicalCanBadgeMarkup,
   canonicalCanFacePlateMarkup,
   canonicalCanLimbAngles,
   canonicalCanSmileMarkup,
   proceduralCanonicalCanLimbMarkup,
+  proceduralCanonicalCanSprayMarkup,
 } from './canLimbs'
 
 export const CANONICAL_CAN_SESSION_FILL = '#ee682a'
@@ -211,7 +213,9 @@ export type CanonicalCanPoseExpression = {
 export type CanonicalCanPoseInput = {
   expression: CanonicalCanPoseExpression
   blink?: number
-  spray?: boolean
+  spray?: number
+  badge?: number
+  stageX?: number
   eyeOffset?: Readonly<{ x: number; y: number }>
 }
 
@@ -223,7 +227,10 @@ export const poseCanonicalCanMarkup = (
   const blink = input.blink ?? 1
   const offset = input.eyeOffset ?? { x: 0, y: 0 }
   const expression = input.expression
-  const prepared = input.spray === false ? stripCanonicalCanPuff(markup) : markup
+  const sprayProgress = input.spray ?? 0
+  const badgeProgress = input.badge ?? 0
+  const stageX = input.stageX ?? 0
+  const prepared = stripCanonicalCanPuff(markup)
   const lean = canonicalCanLean(viewBox, expression.headX, expression.headY, expression.headZ)
   const lookX =
     (expression.positionXLeft + expression.positionXRight) / 2 +
@@ -267,15 +274,15 @@ export const poseCanonicalCanMarkup = (
   )
   const eyesInner = groups.get('eyes')?.inner ?? ''
   const bodyInner = `${groups.get('body')?.inner ?? ''}${canonicalCanFacePlateMarkup()}`
-  const sprayInner = input.spray === false ? '' : (groups.get('spray')?.inner ?? '')
   const shadow = lockGroup('shadow', groups.get('shadow')?.inner ?? '')
   const canInner = `${lockGroup('body', bodyInner)}${lockGroup(
     'eyes',
     `<g data-rmp-part="eye-glyphs"${eyeMotion ? ` transform="${eyeMotion}"` : ''}>${eyesInner}</g><g data-rmp-part="mouth">${canonicalCanSmileMarkup()}</g>`
-  )}${sprayInner ? lockGroup('spray', sprayInner) : ''}`
+  )}`
   const can = lean.can ? `<g data-rmp-part="can" transform="${lean.can}">${canInner}</g>` : canInner
+  const character = `${shadow}${limbGroup('leg-back', limbs.legBack)}${limbGroup('arm-hip', limbs.armHip)}${can}${limbGroup('arm-point', limbs.armPoint)}${limbGroup('leg-front', limbs.legFront)}${proceduralCanonicalCanSprayMarkup(sprayProgress)}${canonicalCanBadgeMarkup(badgeProgress)}`
 
-  return `${shadow}${limbGroup('leg-back', limbs.legBack)}${limbGroup('arm-hip', limbs.armHip)}${can}${limbGroup('arm-point', limbs.armPoint)}${limbGroup('leg-front', limbs.legFront)}`
+  return `<g data-rmp-part="stage" transform="translate(${stageX.toFixed(2)} 0)">${character}</g>`
 }
 
 export const poseCanonicalCan = (

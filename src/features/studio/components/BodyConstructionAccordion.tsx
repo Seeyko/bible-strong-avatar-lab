@@ -176,8 +176,8 @@ export function BodyConstructionAccordion({
                     })
                   }
                 >
-                  <span>{t('Puff de spray')}</span>
-                  <small>{surface.canSpray === false ? t('Masqué') : t('Visible')}</small>
+                  <span>{t('Peinture au spray')}</span>
+                  <small>{surface.canSpray === false ? t('Interdit') : t('Autorisé')}</small>
                 </Button>
               )}
             </div>
