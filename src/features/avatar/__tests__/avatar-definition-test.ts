@@ -486,10 +486,18 @@ describe('Studio to avatar definition conversion', () => {
 
     expect(result.ok).toBe(true)
     if (!result.ok) return
-    expect(result.value.expressionOrder).toHaveLength(29)
+    expect(result.value.expressionOrder).toHaveLength(38)
     expect(result.value.expressionOrder[0]).toBe('neutral')
-    expect(result.value.animationOrder).toHaveLength(23)
+    expect(result.value.animationOrder).toHaveLength(28)
     expect(result.value.animationOrder).toContain('idle')
+    expect(result.value.animationOrder).toContain('walk')
+    expect(result.value.animationOrder).toContain('enter')
+    expect(result.value.animationOrder).toContain('paint')
+    expect(result.value.animationOrder).toContain('spray-off')
+    expect(result.value.animationOrder).toContain('leave')
+    expect(result.value.expressions['can-paint-hit']?.hose?.spray).toBe(1)
+    expect(result.value.expressions['can-paint-hit']?.hose?.badge).toBe(1)
+    expect(result.value.animations.paint.playbackMode).toBe('once')
     expect(result.value.animations.idle.steps.map(step => step.expression)).toEqual([
       'upward-side-glance',
       'curious-left',

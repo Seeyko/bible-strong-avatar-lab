@@ -4,6 +4,7 @@ describe('state playback configuration', () => {
   it('keeps idle slower than an active sequence', () => {
     expect(getStatePlaybackConfig('idle').expressionIntervalMs).toBe(5200)
     expect(getStatePlaybackConfig('listening').expressionIntervalMs).toBe(2300)
+    expect(getStatePlaybackConfig('walk').expressionIntervalMs).toBe(360)
   })
 
   it('describes a valid randomized blink interval', () => {

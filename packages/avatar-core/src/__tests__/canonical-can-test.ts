@@ -9,6 +9,7 @@ import {
   resolveCanonicalCan,
   tintCanonicalCanMarkup,
 } from '../canonicalCan'
+import { canonicalCanLimbAngles } from '../canLimbs'
 import { surfacePresets } from '../surfaces'
 
 const pendingAsset = `<svg viewBox="-150 -150 300 300" data-rmp-canonical="pending"></svg>`
@@ -53,10 +54,7 @@ describe('canonical Can Kid SVG hook', () => {
     expect(parsed.innerMarkup).toContain('data-rmp-part="body"')
     expect(parsed.innerMarkup).toContain('data-rmp-part="eyes"')
     expect(parsed.innerMarkup).toContain('data-rmp-part="spray"')
-    expect(parsed.innerMarkup).toContain('data-rmp-part="arm-hip"')
-    expect(parsed.innerMarkup).toContain('data-rmp-part="arm-point"')
-    expect(parsed.innerMarkup).toContain('data-rmp-part="leg-back"')
-    expect(parsed.innerMarkup).toContain('data-rmp-part="leg-front"')
+    expect(parsed.innerMarkup).not.toContain('data-rmp-part="arm-hip"')
     expect(parsed.transform).toContain('scale(')
   })
 
@@ -90,12 +88,16 @@ describe('canonical Can Kid SVG hook', () => {
     expect(geometry.overlays).toEqual([])
     expect(geometry.leftPath).toBe('')
     expect(geometry.rightPath).toBe('')
-    expect(geometry.canonicalCan?.innerMarkup).toContain('data-rmp-part="rig"')
+    expect(geometry.canonicalCan?.innerMarkup).toContain('data-rmp-part="can"')
     expect(geometry.canonicalCan?.innerMarkup).toContain('data-rmp-part="eyes"')
-    expect(geometry.canonicalCan?.innerMarkup).toContain('data-rmp-part="spray"')
+    expect(geometry.canonicalCan?.innerMarkup).toContain('data-rmp-part="stage"')
+    expect(geometry.canonicalCan?.innerMarkup).not.toContain('data-rmp-part="spray"')
+    expect(geometry.canonicalCan?.innerMarkup).not.toContain('data-rmp-part="badge"')
+    expect(geometry.canonicalCan?.innerMarkup).toContain('data-rmp-procedural="limb"')
+    expect(geometry.canonicalCan?.innerMarkup).toContain('data-rmp-part="mouth"')
   })
 
-  it('hides the spray group when canSpray is off', () => {
+  it('keeps the jet off on idle even when the body can spray', () => {
     const hidden = renderAvatar(
       poseFromExpression(idle),
       { ...surfacePresets.can, canSpray: false },
@@ -105,7 +107,35 @@ describe('canonical Can Kid SVG hook', () => {
     expect(hidden.canonicalCan?.innerMarkup).toContain('data-rmp-part="body"')
   })
 
-  it('orients body, spray and eyes together and rotates the four limbs', () => {
+  it('grows a procedural jet and paints a success badge from clip fields', () => {
+    const painted = renderAvatar(
+      poseFromExpression({ ...idle, spray: 1, badge: 1, stageX: 40 }),
+      surfacePresets.can,
+      1
+    )
+    const markup = painted.canonicalCan?.innerMarkup ?? ''
+    expect(markup).toContain('data-rmp-part="spray"')
+    expect(markup).toContain('data-rmp-spray="1.000"')
+    expect(markup).toContain('data-rmp-part="badge"')
+    expect(markup).toContain('succès')
+    expect(markup).toContain('data-rmp-part="stage"')
+    expect(markup).toContain('translate(40.00 0)')
+    const canOpen = markup.indexOf('data-rmp-part="can"')
+    const canClose = markup.indexOf('data-rmp-part="arm-point"')
+    expect(markup.slice(canOpen, canClose)).not.toContain('data-rmp-part="spray"')
+  })
+
+  it('refuses the jet when the body cannot spray, even if the clip asks for it', () => {
+    const blocked = renderAvatar(
+      poseFromExpression({ ...idle, spray: 1, badge: 1 }),
+      { ...surfacePresets.can, canSpray: false },
+      1
+    )
+    expect(blocked.canonicalCan?.innerMarkup).not.toContain('data-rmp-part="spray"')
+    expect(blocked.canonicalCan?.innerMarkup).not.toContain('data-rmp-part="badge"')
+  })
+
+  it('leans the can without wrapping the four limbs in the same sticker rotate', () => {
     const source = resolveCanonicalCan()
     expect(source).not.toBeNull()
     if (!source) return
@@ -123,14 +153,65 @@ describe('canonical Can Kid SVG hook', () => {
       },
       source.viewBox
     )
-    expect(posed).toContain('data-rmp-part="rig"')
-    expect(posed).toContain('rotate(18')
-    expect(posed).toContain('data-rmp-part="arm-hip"')
-    expect(posed).toContain('rotate(-22')
-    expect(posed).toContain('rotate(14')
-    expect(posed).toContain('rotate(8')
-    expect(posed).toContain('rotate(-11')
-    expect(posed).toContain('data-rmp-part="eyes"')
-    expect(posed).toContain('data-rmp-part="spray"')
+    const canOpen = posed.indexOf('data-rmp-part="can"')
+    const canClose = posed.indexOf('data-rmp-part="arm-point"')
+    const canMarkup = posed.slice(canOpen, canClose)
+    expect(canOpen).toBeGreaterThan(-1)
+    expect(canMarkup).toContain('rotate(18')
+    expect(canMarkup).toContain('data-rmp-part="body"')
+    expect(canMarkup).toContain('data-rmp-part="eyes"')
+    expect(canMarkup).not.toContain('data-rmp-part="spray"')
+    expect(canMarkup).not.toContain('data-rmp-part="arm-hip"')
+    expect(canMarkup).not.toContain('data-rmp-part="leg-front"')
+    expect(posed).toContain('data-rmp-procedural="limb"')
+    const sliders = poseCanonicalCanMarkup(
+      source.innerMarkup,
+      {
+        expression: {
+          ...idle,
+          armHip: -22,
+          armPoint: 14,
+          legBack: 8,
+          legFront: -11,
+        },
+      },
+      source.viewBox
+    )
+    expect(sliders).toContain('rotate(-22')
+    expect(sliders).toContain('rotate(14')
+    expect(sliders).toContain('rotate(8')
+    expect(sliders).toContain('rotate(-11')
+  })
+
+  it('covers the baked face and keeps the lock smile on the eyes layer', () => {
+    const source = resolveCanonicalCan()
+    expect(source).not.toBeNull()
+    if (!source) return
+    expect(source.innerMarkup).not.toContain('translate(385,550)')
+    const posed = poseCanonicalCanMarkup(source.innerMarkup, { expression: idle }, source.viewBox)
+    expect(posed).toContain('data-rmp-part="mouth"')
+    expect(posed).toContain('data-rmp-part="eye-glyphs"')
+    const bodyStart = posed.indexOf('data-rmp-part="body"')
+    const eyesStart = posed.indexOf('data-rmp-part="eyes"')
+    expect(posed.slice(bodyStart, eyesStart)).toContain('data-rmp-face-plate="eyes"')
+    expect(posed.slice(bodyStart, eyesStart)).toContain('data-rmp-face-plate="mouth"')
+  })
+
+  it('swings the limbs when idle head values change, and honors pose sliders', () => {
+    const idleGlance = canonicalCanLimbAngles({ ...idle, headX: 7.3, headZ: -16.1 })
+    const idleCurious = canonicalCanLimbAngles({ ...idle, headX: -22.8, headZ: 6.2 })
+    expect(idleGlance.legFront).not.toBeCloseTo(idleCurious.legFront)
+    expect(idleGlance.armHip).not.toBeCloseTo(idleCurious.armHip)
+    const posed = canonicalCanLimbAngles({
+      ...idle,
+      armHip: -22,
+      armPoint: 14,
+      legBack: 8,
+      legFront: -11,
+    })
+    expect(posed.armHip).toBeCloseTo(-22)
+    expect(posed.armPoint).toBeCloseTo(14)
+    expect(posed.legBack).toBeCloseTo(8)
+    expect(posed.legFront).toBeCloseTo(-11)
   })
 })

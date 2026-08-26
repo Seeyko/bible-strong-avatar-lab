@@ -88,6 +88,15 @@ export type AvatarExpressionDefinition = {
     body: 'none' | 'slowDrift' | 'shake'
   }
   colors?: Partial<AvatarColorsDefinition>
+  hose?: {
+    armHip?: number
+    armPoint?: number
+    legBack?: number
+    legFront?: number
+    spray?: number
+    badge?: number
+    stageX?: number
+  }
 }
 
 export type AvatarAnimationStepDefinition = {

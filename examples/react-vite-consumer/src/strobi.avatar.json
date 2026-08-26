@@ -103,6 +103,12 @@
       "motion": {
         "eyes": "none",
         "body": "none"
+      },
+      "hose": {
+        "armHip": 16,
+        "armPoint": -14,
+        "legBack": -12,
+        "legFront": 14
       }
     },
     "downward-gaze": {
@@ -132,6 +138,12 @@
       "motion": {
         "eyes": "none",
         "body": "none"
+      },
+      "hose": {
+        "armHip": 30,
+        "armPoint": -28,
+        "legBack": -34,
+        "legFront": 32
       }
     },
     "skeptical-right": {
@@ -306,6 +318,12 @@
       "motion": {
         "eyes": "none",
         "body": "none"
+      },
+      "hose": {
+        "armHip": -28,
+        "armPoint": 30,
+        "legBack": 32,
+        "legFront": -34
       }
     },
     "curious-left": {
@@ -335,6 +353,12 @@
       "motion": {
         "eyes": "none",
         "body": "none"
+      },
+      "hose": {
+        "armHip": -14,
+        "armPoint": 16,
+        "legBack": 14,
+        "legFront": -12
       }
     },
     "asymmetric-down-right": {
@@ -865,6 +889,329 @@
       "colors": {
         "body": "#adc3ff"
       }
+    },
+    "can-enter-left": {
+      "head": {
+        "x": -15.057812500000004,
+        "y": 0.14296874999999964,
+        "z": -14.549218750000001
+      },
+      "eyes": {
+        "left": {
+          "width": 34.401171875,
+          "height": 44.5703125,
+          "x": 0,
+          "y": -3,
+          "angle": 0
+        },
+        "right": {
+          "width": 34.401171875,
+          "height": 44.5703125,
+          "x": 0,
+          "y": -3,
+          "angle": 0
+        },
+        "spacing": 66.7
+      },
+      "perspective": 1,
+      "motion": {
+        "eyes": "none",
+        "body": "none"
+      },
+      "hose": {
+        "armHip": 30,
+        "armPoint": -28,
+        "legBack": -34,
+        "legFront": 32,
+        "stageX": -90
+      }
+    },
+    "can-enter-right": {
+      "head": {
+        "x": 8.063671874999999,
+        "y": 17.626562500000002,
+        "z": -11.116796874999999
+      },
+      "eyes": {
+        "left": {
+          "width": 32.908203125,
+          "height": 30.400781249999994,
+          "x": 0,
+          "y": -3,
+          "angle": -30.865625
+        },
+        "right": {
+          "width": 32.908203125,
+          "height": 30.400781249999994,
+          "x": 0,
+          "y": -3,
+          "angle": 28.781640625
+        },
+        "spacing": 61.059765625
+      },
+      "perspective": 1,
+      "motion": {
+        "eyes": "none",
+        "body": "none"
+      },
+      "hose": {
+        "armHip": -28,
+        "armPoint": 30,
+        "legBack": 32,
+        "legFront": -34,
+        "stageX": -18
+      }
+    },
+    "can-enter-settle": {
+      "head": {
+        "x": 7.3,
+        "y": 27.8,
+        "z": -16.1
+      },
+      "eyes": {
+        "left": {
+          "width": 34.501171875,
+          "height": 32.37773437499999,
+          "x": 0,
+          "y": -23.5,
+          "angle": 0
+        },
+        "right": {
+          "width": 34.501171875,
+          "height": 32.37773437499999,
+          "x": 0,
+          "y": -23.5,
+          "angle": 0
+        },
+        "spacing": 63.3
+      },
+      "perspective": 1,
+      "motion": {
+        "eyes": "none",
+        "body": "none"
+      },
+      "hose": {
+        "armHip": 16,
+        "armPoint": -14,
+        "legBack": -12,
+        "legFront": 14
+      }
+    },
+    "can-paint-aim": {
+      "head": {
+        "x": 0.31914062500000184,
+        "y": 35.307421874999996,
+        "z": -10.904296875
+      },
+      "eyes": {
+        "left": {
+          "width": 34.4609375,
+          "height": 29.820703124999994,
+          "x": 0,
+          "y": -3,
+          "angle": 0
+        },
+        "right": {
+          "width": 34.4609375,
+          "height": 29.820703124999994,
+          "x": 0,
+          "y": -3,
+          "angle": 0
+        },
+        "spacing": 62.900000000000006
+      },
+      "perspective": 1,
+      "motion": {
+        "eyes": "none",
+        "body": "none"
+      },
+      "hose": {
+        "armHip": 8,
+        "armPoint": 26,
+        "legBack": -8,
+        "legFront": 10
+      }
+    },
+    "can-paint-stream": {
+      "head": {
+        "x": 0.31914062500000184,
+        "y": 35.307421874999996,
+        "z": -10.904296875
+      },
+      "eyes": {
+        "left": {
+          "width": 34.4609375,
+          "height": 29.820703124999994,
+          "x": 0,
+          "y": -3,
+          "angle": 0
+        },
+        "right": {
+          "width": 34.4609375,
+          "height": 29.820703124999994,
+          "x": 0,
+          "y": -3,
+          "angle": 0
+        },
+        "spacing": 62.900000000000006
+      },
+      "perspective": 1,
+      "motion": {
+        "eyes": "none",
+        "body": "none"
+      },
+      "hose": {
+        "armHip": 6,
+        "armPoint": 32,
+        "legBack": -6,
+        "legFront": 8,
+        "spray": 0.42
+      }
+    },
+    "can-paint-hit": {
+      "head": {
+        "x": -2.092968750000001,
+        "y": -15.899609374999999,
+        "z": -14.469921875
+      },
+      "eyes": {
+        "left": {
+          "width": 46.200867659732126,
+          "height": 75.330859375,
+          "x": 0,
+          "y": -3,
+          "angle": 0
+        },
+        "right": {
+          "width": 46.200867659732126,
+          "height": 73.17775668160692,
+          "x": 0,
+          "y": -3,
+          "angle": 0
+        },
+        "spacing": 68.414453125
+      },
+      "perspective": 1,
+      "motion": {
+        "eyes": "none",
+        "body": "none"
+      },
+      "hose": {
+        "armHip": 4,
+        "armPoint": 34,
+        "legBack": -4,
+        "legFront": 6,
+        "spray": 1,
+        "badge": 1
+      }
+    },
+    "can-spray-off": {
+      "head": {
+        "x": 7.3,
+        "y": 27.8,
+        "z": -16.1
+      },
+      "eyes": {
+        "left": {
+          "width": 34.501171875,
+          "height": 32.37773437499999,
+          "x": 0,
+          "y": -23.5,
+          "angle": 0
+        },
+        "right": {
+          "width": 34.501171875,
+          "height": 32.37773437499999,
+          "x": 0,
+          "y": -23.5,
+          "angle": 0
+        },
+        "spacing": 63.3
+      },
+      "perspective": 1,
+      "motion": {
+        "eyes": "none",
+        "body": "none"
+      },
+      "hose": {
+        "armHip": 10,
+        "armPoint": 8,
+        "legBack": -6,
+        "legFront": 8,
+        "badge": 1
+      }
+    },
+    "can-leave-left": {
+      "head": {
+        "x": -15.057812500000004,
+        "y": 0.14296874999999964,
+        "z": -14.549218750000001
+      },
+      "eyes": {
+        "left": {
+          "width": 34.401171875,
+          "height": 44.5703125,
+          "x": 0,
+          "y": -3,
+          "angle": 0
+        },
+        "right": {
+          "width": 34.401171875,
+          "height": 44.5703125,
+          "x": 0,
+          "y": -3,
+          "angle": 0
+        },
+        "spacing": 66.7
+      },
+      "perspective": 1,
+      "motion": {
+        "eyes": "none",
+        "body": "none"
+      },
+      "hose": {
+        "armHip": 30,
+        "armPoint": -28,
+        "legBack": -34,
+        "legFront": 32,
+        "stageX": 28
+      }
+    },
+    "can-leave-right": {
+      "head": {
+        "x": 8.063671874999999,
+        "y": 17.626562500000002,
+        "z": -11.116796874999999
+      },
+      "eyes": {
+        "left": {
+          "width": 32.908203125,
+          "height": 30.400781249999994,
+          "x": 0,
+          "y": -3,
+          "angle": -30.865625
+        },
+        "right": {
+          "width": 32.908203125,
+          "height": 30.400781249999994,
+          "x": 0,
+          "y": -3,
+          "angle": 28.781640625
+        },
+        "spacing": 61.059765625
+      },
+      "perspective": 1,
+      "motion": {
+        "eyes": "none",
+        "body": "none"
+      },
+      "hose": {
+        "armHip": -28,
+        "armPoint": 30,
+        "legBack": 32,
+        "legFront": -34,
+        "stageX": 96
+      }
     }
   },
   "expressionOrder": [
@@ -896,7 +1243,16 @@
     "suspicious-right",
     "shy-downward",
     "angry-brows",
-    "uneasy-left"
+    "uneasy-left",
+    "can-enter-left",
+    "can-enter-right",
+    "can-enter-settle",
+    "can-paint-aim",
+    "can-paint-stream",
+    "can-paint-hit",
+    "can-spray-off",
+    "can-leave-left",
+    "can-leave-right"
   ],
   "animations": {
     "sleeping": {
@@ -982,7 +1338,36 @@
       },
       "metadata": {
         "label": "idle",
-        "description": "Micro-mouvements lents, expressions 00 et 08, clignement rare.",
+        "description": "Membres qui se balancent, un seul visage, aucun jet collé.",
+        "group": "Cycle de vie"
+      }
+    },
+    "walk": {
+      "playbackMode": "loop",
+      "steps": [
+        {
+          "expression": "downward-gaze",
+          "holdMs": 360,
+          "transitionMs": 180,
+          "transition": "smooth"
+        },
+        {
+          "expression": "angry-right",
+          "holdMs": 360,
+          "transitionMs": 180,
+          "transition": "smooth"
+        }
+      ],
+      "blink": {
+        "enabled": true,
+        "initialDelayMs": 2100,
+        "minIntervalMs": 2800,
+        "maxIntervalMs": 5000,
+        "durationMs": 260
+      },
+      "metadata": {
+        "label": "walk",
+        "description": "Pas rubber-hose : les jambes et les bras s’inversent à chaque pas.",
         "group": "Cycle de vie"
       }
     },
@@ -1733,12 +2118,141 @@
         "description": "Cet état enchaîne un pool de presets et des clignements.",
         "group": "Réactions"
       }
+    },
+    "enter": {
+      "playbackMode": "once",
+      "steps": [
+        {
+          "expression": "can-enter-left",
+          "holdMs": 280,
+          "transitionMs": 420,
+          "transition": "smooth"
+        },
+        {
+          "expression": "can-enter-right",
+          "holdMs": 280,
+          "transitionMs": 420,
+          "transition": "smooth"
+        },
+        {
+          "expression": "can-enter-settle",
+          "holdMs": 520,
+          "transitionMs": 360,
+          "transition": "smooth"
+        }
+      ],
+      "blink": {
+        "enabled": true,
+        "initialDelayMs": 2100,
+        "minIntervalMs": 2800,
+        "maxIntervalMs": 5000,
+        "durationMs": 260
+      },
+      "metadata": {
+        "label": "enter",
+        "description": "Arrive en marchant, membres rubber-hose, puis s’arrête.",
+        "group": "Can Kid"
+      }
+    },
+    "paint": {
+      "playbackMode": "once",
+      "steps": [
+        {
+          "expression": "can-paint-aim",
+          "holdMs": 360,
+          "transitionMs": 280,
+          "transition": "smooth"
+        },
+        {
+          "expression": "can-paint-stream",
+          "holdMs": 480,
+          "transitionMs": 320,
+          "transition": "smooth"
+        },
+        {
+          "expression": "can-paint-hit",
+          "holdMs": 900,
+          "transitionMs": 360,
+          "transition": "smooth"
+        }
+      ],
+      "blink": {
+        "enabled": true,
+        "initialDelayMs": 2100,
+        "minIntervalMs": 2800,
+        "maxIntervalMs": 5000,
+        "durationMs": 260
+      },
+      "metadata": {
+        "label": "paint",
+        "description": "Le spray part, peint un badge « succès », le jet reste une animation.",
+        "group": "Can Kid"
+      }
+    },
+    "spray-off": {
+      "playbackMode": "once",
+      "steps": [
+        {
+          "expression": "can-paint-hit",
+          "holdMs": 220,
+          "transitionMs": 240,
+          "transition": "smooth"
+        },
+        {
+          "expression": "can-spray-off",
+          "holdMs": 720,
+          "transitionMs": 400,
+          "transition": "smooth"
+        }
+      ],
+      "blink": {
+        "enabled": true,
+        "initialDelayMs": 2100,
+        "minIntervalMs": 2800,
+        "maxIntervalMs": 5000,
+        "durationMs": 260
+      },
+      "metadata": {
+        "label": "spray-off",
+        "description": "Range le jet. Le badge reste posé.",
+        "group": "Can Kid"
+      }
+    },
+    "leave": {
+      "playbackMode": "once",
+      "steps": [
+        {
+          "expression": "can-leave-left",
+          "holdMs": 280,
+          "transitionMs": 420,
+          "transition": "smooth"
+        },
+        {
+          "expression": "can-leave-right",
+          "holdMs": 420,
+          "transitionMs": 420,
+          "transition": "smooth"
+        }
+      ],
+      "blink": {
+        "enabled": true,
+        "initialDelayMs": 2100,
+        "minIntervalMs": 2800,
+        "maxIntervalMs": 5000,
+        "durationMs": 260
+      },
+      "metadata": {
+        "label": "leave",
+        "description": "Repart en marchant, membres rubber-hose.",
+        "group": "Can Kid"
+      }
     }
   },
   "animationOrder": [
     "sleeping",
     "waking",
     "idle",
+    "walk",
     "listening",
     "thinking",
     "searching",
@@ -1758,6 +2272,10 @@
     "laughing",
     "scared",
     "playful",
-    "celebrate"
+    "celebrate",
+    "enter",
+    "paint",
+    "spray-off",
+    "leave"
   ]
 }

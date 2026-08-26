@@ -66,7 +66,27 @@ const mapExpression = (expression: Expression): AvatarExpressionDefinition => ({
         },
       }
     : {}),
+  ...mapHose(expression),
 })
+
+const hoseFieldKeys = [
+  'armHip',
+  'armPoint',
+  'legBack',
+  'legFront',
+  'spray',
+  'badge',
+  'stageX',
+] as const
+
+const mapHose = (expression: Expression) => {
+  const hose = Object.fromEntries(
+    hoseFieldKeys
+      .map(field => [field, expression[field] ?? 0] as const)
+      .filter(([, value]) => value !== 0)
+  )
+  return Object.keys(hose).length ? { hose } : {}
+}
 
 const semanticKeyError = (
   path: string,

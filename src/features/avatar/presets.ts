@@ -26,6 +26,15 @@ export const bundledExpressionSemanticKeys: Record<string, string> = {
   'expression-22': 'drowsy-closed',
   'expression-23': 'suspicious-right',
   'expression-24': 'shy-downward',
+  'expression-can-enter-l': 'can-enter-left',
+  'expression-can-enter-r': 'can-enter-right',
+  'expression-can-enter-settle': 'can-enter-settle',
+  'expression-can-paint-aim': 'can-paint-aim',
+  'expression-can-paint-stream': 'can-paint-stream',
+  'expression-can-paint-hit': 'can-paint-hit',
+  'expression-can-spray-off': 'can-spray-off',
+  'expression-can-leave-l': 'can-leave-left',
+  'expression-can-leave-r': 'can-leave-right',
 }
 
 const calibrated: number[][] = [
@@ -56,7 +65,27 @@ const calibrated: number[][] = [
   [-29.6, 7.5, 10.1, 21.5, 23.2, 32, 33.5, 51.2, -37.4, 0, 0],
 ]
 
-export const initialExpressions: Expression[] = calibrated.map(
+const hoseRest = {
+  armHip: 0,
+  armPoint: 0,
+  legBack: 0,
+  legFront: 0,
+  spray: 0,
+  badge: 0,
+  stageX: 0,
+} as const
+
+const idleWalkLimbs: Record<
+  number,
+  Pick<Expression, 'armHip' | 'armPoint' | 'legBack' | 'legFront'>
+> = {
+  0: { armHip: 16, armPoint: -14, legBack: -12, legFront: 14 },
+  1: { armHip: 30, armPoint: -28, legBack: -34, legFront: 32 },
+  7: { armHip: -28, armPoint: 30, legBack: 32, legFront: -34 },
+  8: { armHip: -14, armPoint: 16, legBack: 14, legFront: -12 },
+}
+
+const calibratedExpressions: Expression[] = calibrated.map(
   (
     [
       headX,
@@ -92,8 +121,99 @@ export const initialExpressions: Expression[] = calibrated.map(
     perspective: 1,
     eyeMotion: 'none',
     bodyMotion: 'none',
+    ...hoseRest,
+    ...idleWalkLimbs[index],
   })
 )
+
+const clipFrom = (
+  source: Expression,
+  id: string,
+  hose: Pick<
+    Expression,
+    'armHip' | 'armPoint' | 'legBack' | 'legFront' | 'spray' | 'badge' | 'stageX'
+  >
+): Expression => ({
+  ...source,
+  id,
+  semanticKey: bundledExpressionSemanticKeys[id],
+  ...hoseRest,
+  ...hose,
+})
+
+const walkLeft = idleWalkLimbs[1]!
+const walkRight = idleWalkLimbs[7]!
+
+export const canKidClipExpressions: Expression[] = [
+  clipFrom(calibratedExpressions[1]!, 'expression-can-enter-l', {
+    ...walkLeft,
+    spray: 0,
+    badge: 0,
+    stageX: -90,
+  }),
+  clipFrom(calibratedExpressions[7]!, 'expression-can-enter-r', {
+    ...walkRight,
+    spray: 0,
+    badge: 0,
+    stageX: -18,
+  }),
+  clipFrom(calibratedExpressions[0]!, 'expression-can-enter-settle', {
+    ...idleWalkLimbs[0]!,
+    spray: 0,
+    badge: 0,
+    stageX: 0,
+  }),
+  clipFrom(calibratedExpressions[15]!, 'expression-can-paint-aim', {
+    armHip: 8,
+    armPoint: 26,
+    legBack: -8,
+    legFront: 10,
+    spray: 0,
+    badge: 0,
+    stageX: 0,
+  }),
+  clipFrom(calibratedExpressions[15]!, 'expression-can-paint-stream', {
+    armHip: 6,
+    armPoint: 32,
+    legBack: -6,
+    legFront: 8,
+    spray: 0.42,
+    badge: 0,
+    stageX: 0,
+  }),
+  clipFrom(calibratedExpressions[11]!, 'expression-can-paint-hit', {
+    armHip: 4,
+    armPoint: 34,
+    legBack: -4,
+    legFront: 6,
+    spray: 1,
+    badge: 1,
+    stageX: 0,
+  }),
+  clipFrom(calibratedExpressions[0]!, 'expression-can-spray-off', {
+    armHip: 10,
+    armPoint: 8,
+    legBack: -6,
+    legFront: 8,
+    spray: 0,
+    badge: 1,
+    stageX: 0,
+  }),
+  clipFrom(calibratedExpressions[1]!, 'expression-can-leave-l', {
+    ...walkLeft,
+    spray: 0,
+    badge: 0,
+    stageX: 28,
+  }),
+  clipFrom(calibratedExpressions[7]!, 'expression-can-leave-r', {
+    ...walkRight,
+    spray: 0,
+    badge: 0,
+    stageX: 96,
+  }),
+]
+
+export const initialExpressions: Expression[] = [...calibratedExpressions, ...canKidClipExpressions]
 
 export const defaultExpression: Expression = {
   id: 'expression-neutral',
@@ -114,10 +234,20 @@ export const defaultExpression: Expression = {
   perspective: 1,
   eyeMotion: 'none',
   bodyMotion: 'none',
+  ...hoseRest,
 }
 
 export const stateGroups = {
-  'Cycle de vie': ['sleeping', 'waking', 'idle', 'listening', 'thinking', 'searching', 'working'],
+  'Cycle de vie': [
+    'sleeping',
+    'waking',
+    'idle',
+    'walk',
+    'listening',
+    'thinking',
+    'searching',
+    'working',
+  ],
   Réactions: [
     'excited',
     'surprised',
@@ -142,6 +272,7 @@ export const statePools: Record<string, number[]> = {
   sleeping: [13, 22, 4],
   waking: [13],
   idle: [0, 8],
+  walk: [1, 7],
   listening: [10, 1, 19],
   thinking: [8, 16, 14, 17, 5],
   searching: [15, 9, 3, 20, 12, 18],
@@ -230,7 +361,8 @@ export const getStatePlaybackConfig = (name: string): StatePlaybackConfig => {
             ? blinkProfiles.reactive
             : blinkProfiles.active
   return {
-    expressionIntervalMs: name === 'idle' ? 5200 : calmStates.has(name) ? 3600 : 2300,
+    expressionIntervalMs:
+      name === 'walk' ? 360 : name === 'idle' ? 5200 : calmStates.has(name) ? 3600 : 2300,
     blink: { ...blink },
   }
 }
@@ -238,7 +370,12 @@ export const getStatePlaybackConfig = (name: string): StatePlaybackConfig => {
 export const stateNotes: Record<string, string> = {
   sleeping: 'Yeux presque fermés, respiration lente et expression de sommeil.',
   waking: 'Animation courte de réveil avant retour vers une expression neutre.',
-  idle: 'Micro-mouvements lents, expressions 00 et 08, clignement rare.',
+  idle: 'Membres qui se balancent, un seul visage, aucun jet collé.',
+  walk: 'Pas rubber-hose : les jambes et les bras s’inversent à chaque pas.',
+  enter: 'Arrive en marchant, membres rubber-hose, puis s’arrête.',
+  paint: 'Le spray part, peint un badge « succès », le jet reste une animation.',
+  'spray-off': 'Range le jet. Le badge reste posé.',
+  leave: 'Repart en marchant, membres rubber-hose.',
   listening: 'Expressions 10, 01 et 19, regard stable et clignement attentif.',
   thinking: 'Regard haut et latéral, expressions asymétriques et changements fréquents.',
   searching: 'Balayage rapide et changements très fréquents.',

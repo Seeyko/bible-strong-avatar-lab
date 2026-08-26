@@ -58,6 +58,9 @@ export type Expression = {
   armPoint?: number
   legBack?: number
   legFront?: number
+  spray?: number
+  badge?: number
+  stageX?: number
   bodyColor?: string
   eyeColor?: string
   eyeGlyphLeft?: GraffitiEyeId
@@ -147,6 +150,9 @@ export const expressionFields: ExpressionNumericField[] = [
   'armPoint',
   'legBack',
   'legFront',
+  'spray',
+  'badge',
+  'stageX',
 ]
 
 export const clamp = (value: number, min: number, max: number) =>
@@ -513,6 +519,9 @@ export const normalizeExpression = (expression: Expression): Expression => ({
   armPoint: expression.armPoint ?? 0,
   legBack: expression.legBack ?? 0,
   legFront: expression.legFront ?? 0,
+  spray: expression.spray ?? 0,
+  badge: expression.badge ?? 0,
+  stageX: expression.stageX ?? 0,
 })
 
 export const poseFromExpression = (expression: Expression): AvatarPose => {
@@ -1442,7 +1451,9 @@ export const renderAvatar = (
     ? poseCanonicalCan(resolveCanonicalCan(), {
         expression: pose.expression,
         blink,
-        spray: parseCanSpray(surface.canSpray),
+        spray: parseCanSpray(surface.canSpray) ? clamp(pose.expression.spray ?? 0, 0, 1) : 0,
+        badge: parseCanSpray(surface.canSpray) ? clamp(pose.expression.badge ?? 0, 0, 1) : 0,
+        stageX: pose.expression.stageX ?? 0,
         eyeOffset: options.eyeOffset,
       })
     : null

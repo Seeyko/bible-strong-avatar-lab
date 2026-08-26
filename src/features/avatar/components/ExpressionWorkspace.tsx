@@ -451,8 +451,32 @@ export function ExpressionWorkspace({
                   onChange={value => update({ [field]: value })}
                 />
               ))}
+              <NumericField
+                label="Jet de spray"
+                value={editing.draft.spray ?? 0}
+                min={0}
+                max={1}
+                step={0.01}
+                onChange={value => update({ spray: value })}
+              />
+              <NumericField
+                label="Badge succès"
+                value={editing.draft.badge ?? 0}
+                min={0}
+                max={1}
+                step={0.01}
+                onChange={value => update({ badge: value })}
+              />
+              <NumericField
+                label="Position de scène"
+                value={editing.draft.stageX ?? 0}
+                unit="px"
+                min={-160}
+                max={160}
+                onChange={value => update({ stageX: value })}
+              />
               <p className="field-help">
-                {t('Les quatre membres tournent autour de leur épaule ou hanche.')}
+                {t('Le jet part, puis s’arrête. Ce n’est pas un calque collé.')}
               </p>
             </Card>
           </ControlSection>

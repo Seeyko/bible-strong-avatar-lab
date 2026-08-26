@@ -163,7 +163,7 @@ function PoseControls({ controller }: { controller: StudioController }) {
             title="Rotation de la tête"
             subtitle={
               activeAvatar.body.primary.type === 'can'
-                ? 'Oriente le corps, la tête, le spray et les yeux ensemble.'
+                ? 'La tête penche la bombe. Les membres pivotent tout seuls.'
                 : 'Les libellés ↔ sont scrubbables, comme dans Figma.'
             }
           />
@@ -219,6 +219,30 @@ function PoseControls({ controller }: { controller: StudioController }) {
               value={expression.legFront ?? 0}
               unit="°"
               onChange={value => updateImmediate({ ...expression, legFront: value })}
+            />
+            <NumericField
+              label="Jet de spray"
+              value={expression.spray ?? 0}
+              min={0}
+              max={1}
+              step={0.01}
+              onChange={value => updateImmediate({ ...expression, spray: value })}
+            />
+            <NumericField
+              label="Badge succès"
+              value={expression.badge ?? 0}
+              min={0}
+              max={1}
+              step={0.01}
+              onChange={value => updateImmediate({ ...expression, badge: value })}
+            />
+            <NumericField
+              label="Position de scène"
+              value={expression.stageX ?? 0}
+              unit="px"
+              min={-160}
+              max={160}
+              onChange={value => updateImmediate({ ...expression, stageX: value })}
             />
           </InspectorCard>
         )}

@@ -229,6 +229,20 @@
             "body": { "$ref": "#/$defs/hexColor" },
             "eyes": { "$ref": "#/$defs/hexColor" }
           }
+        },
+        "hose": {
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "properties": {
+            "armHip": { "$ref": "#/$defs/boundedNumber" },
+            "armPoint": { "$ref": "#/$defs/boundedNumber" },
+            "legBack": { "$ref": "#/$defs/boundedNumber" },
+            "legFront": { "$ref": "#/$defs/boundedNumber" },
+            "spray": { "type": "number", "minimum": 0, "maximum": 1 },
+            "badge": { "type": "number", "minimum": 0, "maximum": 1 },
+            "stageX": { "$ref": "#/$defs/boundedNumber" }
+          }
         }
       }
     },

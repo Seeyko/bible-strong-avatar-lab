@@ -121,7 +121,21 @@ const toExpression = (
   ...(expression.colors?.eyes ? { eyeColor: expression.colors.eyes } : {}),
   ...(expression.eyes.left.glyph ? { eyeGlyphLeft: expression.eyes.left.glyph } : {}),
   ...(expression.eyes.right.glyph ? { eyeGlyphRight: expression.eyes.right.glyph } : {}),
+  ...hoseFromDefinition(expression.hose),
 })
+
+const hoseFromDefinition = (hose?: AvatarExpressionDefinition['hose']) =>
+  hose
+    ? {
+        ...(hose.armHip !== undefined ? { armHip: hose.armHip } : {}),
+        ...(hose.armPoint !== undefined ? { armPoint: hose.armPoint } : {}),
+        ...(hose.legBack !== undefined ? { legBack: hose.legBack } : {}),
+        ...(hose.legFront !== undefined ? { legFront: hose.legFront } : {}),
+        ...(hose.spray !== undefined ? { spray: hose.spray } : {}),
+        ...(hose.badge !== undefined ? { badge: hose.badge } : {}),
+        ...(hose.stageX !== undefined ? { stageX: hose.stageX } : {}),
+      }
+    : {}
 
 const toSequence = (
   importId: string,
