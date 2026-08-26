@@ -1425,8 +1425,8 @@ export const renderAvatar = (
       : can
         ? canPieEyePath(pose, surface, 1, blink, options.eyeOffset)
         : path(right),
-    leftVisible: leftSamples.reduce((total, sample) => total + sample.normal[2], 0) > 0,
-    rightVisible: rightSamples.reduce((total, sample) => total + sample.normal[2], 0) > 0,
+    leftVisible: can || leftSamples.reduce((total, sample) => total + sample.normal[2], 0) > 0,
+    rightVisible: can || rightSamples.reduce((total, sample) => total + sample.normal[2], 0) > 0,
     wirePaths: options.includeWire === false ? [] : wirePaths(pose, surface),
     overlays: can ? canOverlays(pose, surface, blink, options.eyeOffset) : [],
   }

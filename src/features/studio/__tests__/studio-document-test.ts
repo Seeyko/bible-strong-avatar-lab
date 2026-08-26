@@ -35,7 +35,7 @@ describe('Studio document', () => {
     expect(document.library.avatars).toHaveLength(10)
     expect(document.library.activeAvatarId).toBe(document.library.avatars[0].id)
     expect(document.library.avatars[0].name).toBe('Can Kid')
-    expect(document.expressions).toHaveLength(27)
+    expect(document.expressions).toHaveLength(28)
     expect(document.sequences).toHaveLength(23)
     expect(document.expressions.every(expression => expression.semanticKey)).toBe(true)
     expect(document.sequences.every(sequence => sequence.semanticKey)).toBe(true)

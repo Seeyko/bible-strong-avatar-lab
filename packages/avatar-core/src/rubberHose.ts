@@ -114,20 +114,16 @@ const hose = (
 }
 
 const glove = (cx: number, cy: number, scale: number, pointing: boolean) => {
-  const palm = ellipse(cx, cy, 9.2 * scale, 8.4 * scale)
   if (pointing) {
-    const index = ellipse(cx + 14 * scale, cy - 1.2 * scale, 8.6 * scale, 3.1 * scale)
-    const middle = ellipse(cx + 7.2 * scale, cy + 5.2 * scale, 4.4 * scale, 2.6 * scale)
-    const ring = ellipse(cx + 3.4 * scale, cy + 7.4 * scale, 3.8 * scale, 2.3 * scale)
-    const pinky = ellipse(cx - 0.6 * scale, cy + 8.2 * scale, 3.2 * scale, 2.1 * scale)
-    return `${palm}${index}${middle}${ring}${pinky}`
+    const palm = blob(cx, cy, 13 * scale, 11.5 * scale, 51 + cx, 12, 0.05)
+    const index = blob(cx + 18 * scale, cy - 1 * scale, 12 * scale, 4.4 * scale, 52 + cx, 10, 0.04)
+    const lower = blob(cx + 7 * scale, cy + 7 * scale, 8.5 * scale, 5.2 * scale, 53 + cx, 10, 0.05)
+    return `${palm}${index}${lower}`
   }
-  const thumb = ellipse(cx - 8.4 * scale, cy - 2.6 * scale, 3.6 * scale, 2.8 * scale)
-  const index = ellipse(cx + 2.2 * scale, cy - 9.4 * scale, 3.2 * scale, 4.6 * scale)
-  const middle = ellipse(cx + 6.8 * scale, cy - 8.2 * scale, 3.1 * scale, 4.4 * scale)
-  const ring = ellipse(cx + 10.4 * scale, cy - 5.6 * scale, 2.8 * scale, 3.8 * scale)
-  const pinky = ellipse(cx + 12.2 * scale, cy - 1.8 * scale, 2.4 * scale, 3.2 * scale)
-  return `${palm}${thumb}${index}${middle}${ring}${pinky}`
+  const palm = blob(cx, cy, 13 * scale, 11.5 * scale, 61 + cx, 12, 0.05)
+  const fingers = blob(cx + 2 * scale, cy - 11 * scale, 10 * scale, 8.5 * scale, 62 + cx, 10, 0.05)
+  const thumb = blob(cx - 10 * scale, cy - 1 * scale, 5.6 * scale, 4.6 * scale, 63 + cx, 8, 0.04)
+  return `${palm}${fingers}${thumb}`
 }
 
 const sneaker = (cx: number, cy: number, scaleX: number, scaleY: number) => {
@@ -200,7 +196,7 @@ export const canLocalOverlays = (spray = DEFAULT_CAN_SPRAY): OverlayLayer[] => {
     layer(hose(-16, 50, -22, 66, -30, 80, 6.2), 'ink', 'back'),
     layer(hose(14, 50, 24, 68, 34, 84, 6.2), 'ink', 'back'),
     layer(hose(-40, 12, -58, 30, -50, 44, 6.6), 'ink', 'front'),
-    layer(glove(-58, 48, 1.18, false), 'paper', 'front'),
+    layer(glove(-58, 48, 1.18, false), 'paper', 'front', { strokeWidth: 3.5 }),
     layer(canCapLocal(), 'ink', 'front'),
     layer(canNozzleLocal(), 'ink', 'front'),
     layer(canRimLocal(), 'metal', 'front'),
@@ -209,7 +205,7 @@ export const canLocalOverlays = (spray = DEFAULT_CAN_SPRAY): OverlayLayer[] => {
     layer(brow(-16, -24, true), 'ink', 'front', { strokeWidth: 2.5 }),
     layer(brow(16, -24, false), 'ink', 'front', { strokeWidth: 2.5 }),
     layer(hose(40, 10, 62, 16, 80, 18, 6.4), 'ink', 'front'),
-    layer(glove(96, 18, 1.2, true), 'paper', 'front'),
+    layer(glove(96, 18, 1.2, true), 'paper', 'front', { strokeWidth: 3.5 }),
     layer(sneaker(-32, 86, 1, 1), 'body', 'front'),
     layer(sneakerSole(-32, 86, 1, 1), 'paper', 'front'),
     layer(sneaker(38, 90, 1.05, 1), 'body', 'front'),
@@ -245,8 +241,8 @@ export const pieEyeWhitePath = (width: number, height: number) => {
 }
 
 export const pieEyeWedgePath = (width: number, height: number) => {
-  const rx = Math.max(width * 0.3, 1)
-  const ry = Math.max(height * 0.3, 1)
+  const rx = Math.max(width * 0.42, 1)
+  const ry = Math.max(height * 0.42, 1)
   const cx = width * 0.05
   const cy = height * 0.04
   const start = (-38 * Math.PI) / 180
