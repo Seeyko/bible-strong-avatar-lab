@@ -130,7 +130,7 @@ The application is a client-only Vite site with no server runtime or environment
 
 Dokploy watches **`docker-compose.yml` at the repository root**. Without that file, the stack is not deployed.
 
-The compose file builds the Vite app, then serves `dist/` with busybox `httpd` on port 80 (no app runtime, near-zero idle). Traefik labels follow the same pattern as `bookmarks-gallery`: host from `AVATAR_LAB_HOST`, `dokploy-network`, explicit router-to-service link.
+The compose file copies the working `bookmarks-gallery` Traefik recipe: one service, `build: .`, `expose: "80"`, external `dokploy-network`. Set `AVATAR_LAB_HOST` in Dokploy (auto URL / traefik.me). The router is linked explicitly to the service (`routers.avatar-lab.service=avatar-lab` and `loadbalancer.server.port=80`) so Traefik does not 404 when Dokploy injects its traefik.me router. The image is a multi-stage Node build that serves `dist/` with busybox `httpd` on port 80 — no Node in production.
 
 ```bash
 docker compose build
