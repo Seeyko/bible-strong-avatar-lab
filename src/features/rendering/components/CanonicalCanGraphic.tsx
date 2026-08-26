@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { motion, type MotionValue } from 'motion/react'
+import { type MotionValue } from 'motion/react'
 
 import {
   serializeCanonicalCanLayer,
@@ -46,25 +46,21 @@ export function LiveCanonicalCanGraphic({
     const node = ref.current
     if (!node) return
     const raw = markup.get()
+    node.setAttribute('transform', transform.get())
     node.innerHTML = raw ? tintCanonicalCanMarkup(raw, { body: bodyColor.get() }) : ''
   }
   useEffect(() => {
     paint()
     const offMarkup = markup.on('change', paint)
     const offColor = bodyColor.on('change', paint)
+    const offTransform = transform.on('change', paint)
     return () => {
       offMarkup()
       offColor()
+      offTransform()
     }
   })
-  return (
-    <motion.g
-      ref={ref}
-      className="avatar-can-lock"
-      transform={transform}
-      onPointerDown={onPointerDown}
-    />
-  )
+  return <g ref={ref} className="avatar-can-lock" onPointerDown={onPointerDown} />
 }
 
 export const canonicalCanSnapshotMarkup = (source: CanonicalCanSource, bodyColor: string) =>
