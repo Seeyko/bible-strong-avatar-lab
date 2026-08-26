@@ -84,6 +84,8 @@ import {
 } from '@/features/avatar/expressionEditing'
 import {
   expressionFields,
+  normalizeExpression,
+  numericExpressionValue,
   poseFromExpression,
   renderAvatar,
   type AvatarPose,
@@ -547,9 +549,9 @@ export function useStudioController() {
       while (resolved - from < -180) resolved += 360
       return resolved
     }
-    canonicalTarget.current = next
+    canonicalTarget.current = normalizeExpression(next)
     const resolvedTarget = {
-      ...next,
+      ...normalizeExpression(next),
       headX: nearestAngle(next.headX, current.headX),
       headY: nearestAngle(next.headY, current.headY),
       headZ: nearestAngle(next.headZ, current.headZ),
@@ -587,7 +589,9 @@ export function useStudioController() {
               : 1 - Math.exp(-6 * progress) * Math.cos(8 * progress)
         const animated = { ...from, eyeMotion: next.eyeMotion, bodyMotion: next.bodyMotion }
         expressionFields.forEach(field => {
-          animated[field] = from[field] + (resolvedTarget[field] - from[field]) * eased
+          const origin = numericExpressionValue(from, field)
+          const target = numericExpressionValue(resolvedTarget, field)
+          animated[field] = origin + (target - origin) * eased
         })
         activeSequenceTransition.current = {
           target: next,
@@ -644,7 +648,11 @@ export function useStudioController() {
     transitionTarget.current = resolvedTarget
     lastAmbientStrength.current = 0
     const initialTransitionDistance = expressionFields.reduce(
-      (total, field) => total + Math.abs(resolvedTarget[field] - current[field]),
+      (total, field) =>
+        total +
+        Math.abs(
+          numericExpressionValue(resolvedTarget, field) - numericExpressionValue(current, field)
+        ),
       0
     )
     let transitionProgress = 0
@@ -666,9 +674,9 @@ export function useStudioController() {
           linearProgress ** 3 * (linearProgress * (linearProgress * 6 - 15) + 10)
         const blendedTarget = { ...retargetTo.current }
         expressionFields.forEach(field => {
-          blendedTarget[field] =
-            retargetFrom.current![field] +
-            (retargetTo.current![field] - retargetFrom.current![field]) * smoothProgress
+          const origin = numericExpressionValue(retargetFrom.current!, field)
+          const target = numericExpressionValue(retargetTo.current!, field)
+          blendedTarget[field] = origin + (target - origin) * smoothProgress
         })
         transitionTarget.current = blendedTarget
         if (linearProgress === 1) {
@@ -680,7 +688,11 @@ export function useStudioController() {
       }
       const target = transitionTarget.current
       const remainingTransitionDistance = expressionFields.reduce(
-        (total, field) => total + Math.abs(target[field] - currentExpression[field]),
+        (total, field) =>
+          total +
+          Math.abs(
+            numericExpressionValue(target, field) - numericExpressionValue(currentExpression, field)
+          ),
         0
       )
       const geometricProgress =
@@ -694,10 +706,11 @@ export function useStudioController() {
       animated.bodyMotion = target.bodyMotion
 
       expressionFields.forEach(field => {
-        const displacement = target[field] - currentExpression[field]
+        const displacement =
+          numericExpressionValue(target, field) - numericExpressionValue(currentExpression, field)
         const acceleration = (stiffness * displacement - damping * transitionVelocity[field]) / mass
         const velocity = transitionVelocity[field] + acceleration * deltaTime
-        const value = currentExpression[field] + velocity * deltaTime
+        const value = numericExpressionValue(currentExpression, field) + velocity * deltaTime
         transitionVelocity[field] = velocity
         animated[field] = value
         const tolerance = field === 'perspective' ? 0.0001 : 0.005

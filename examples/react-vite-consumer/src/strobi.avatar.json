@@ -47,6 +47,35 @@
         "body": "none"
       }
     },
+    "front-facing": {
+      "head": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "eyes": {
+        "left": {
+          "width": 32,
+          "height": 40,
+          "x": 0,
+          "y": -10,
+          "angle": 0
+        },
+        "right": {
+          "width": 32,
+          "height": 40,
+          "x": 0,
+          "y": -10,
+          "angle": 0
+        },
+        "spacing": 44
+      },
+      "perspective": 1,
+      "motion": {
+        "eyes": "none",
+        "body": "none"
+      }
+    },
     "upward-side-glance": {
       "head": {
         "x": 7.3,
@@ -840,6 +869,7 @@
   },
   "expressionOrder": [
     "neutral",
+    "front-facing",
     "upward-side-glance",
     "downward-gaze",
     "skeptical-right",

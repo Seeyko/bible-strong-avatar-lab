@@ -20,6 +20,8 @@ export type RenderedScene = {
   wirePaths: MotionValue<string>[]
   overlayPaths: MotionValue<string>[]
   overlays: { current: OverlayLayer[] }
+  canonicalCanTransform: MotionValue<string>
+  canonicalCanMarkup: MotionValue<string>
 }
 
 export type RenderedColors = {
@@ -50,6 +52,8 @@ export const createRenderedScene = (geometry: AvatarGeometry): RenderedScene => 
     motionValue(geometry.overlays[index]?.d ?? '')
   ),
   overlays: { current: geometry.overlays },
+  canonicalCanTransform: motionValue(geometry.canonicalCan?.transform ?? ''),
+  canonicalCanMarkup: motionValue(geometry.canonicalCan?.innerMarkup ?? ''),
 })
 
 export const createRenderedColors = (colors: AvatarColors): RenderedColors => ({
@@ -80,6 +84,8 @@ export const paintRenderedScene = (scene: RenderedScene, geometry: AvatarGeometr
   scene.wirePaths.forEach((path, index) => path.set(geometry.wirePaths[index] ?? ''))
   scene.overlays.current = geometry.overlays
   scene.overlayPaths.forEach((path, index) => path.set(geometry.overlays[index]?.d ?? ''))
+  scene.canonicalCanTransform.set(geometry.canonicalCan?.transform ?? '')
+  scene.canonicalCanMarkup.set(geometry.canonicalCan?.innerMarkup ?? '')
 }
 
 export const findBodyNodePath = (scene: RenderedScene, selectedBodyNodeId: 'primary' | string) => {

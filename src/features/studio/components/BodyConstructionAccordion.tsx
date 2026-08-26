@@ -17,6 +17,7 @@ import { getPreviewGeometry, scaleSurface } from '@/app/studio-utils'
 import { bodyPrimitiveTypes, MAX_BODY_NODES, type BodyNode } from '@/features/avatar/body'
 import { SurfaceThumbnail } from '@/features/avatar/components/ExpressionWorkspace'
 import { GraffitiRingGrid } from '@/features/avatar/components/GraffitiPickers'
+import { CanonicalCanGraphic } from '@/features/rendering/components/CanonicalCanGraphic'
 import { OverlayPathList } from '@/features/rendering/components/OverlayPaths'
 import { surfaceLabels, surfacePresets, type SurfaceConfig } from '@/features/avatar/surfaces'
 import type { StudioController } from '@/features/studio/useStudioController'
@@ -46,6 +47,9 @@ function BodyStructureThumbnail({
   return (
     <span className="body-structure-thumbnail" aria-hidden="true">
       <svg viewBox="-150 -150 300 300">
+        {geometry.canonicalCan && (
+          <CanonicalCanGraphic source={geometry.canonicalCan} bodyColor="#ee682a" />
+        )}
         <OverlayPathList overlays={geometry.overlays} placement="back" />
         {geometry.backPaths.map((pathValue, index) => (
           <path
@@ -54,7 +58,7 @@ function BodyStructureThumbnail({
             key={`back-${geometry.backNodeIds[index] ?? index}`}
           />
         ))}
-        <path className={pathClassName(null)} d={geometry.headPath} />
+        {!geometry.canonicalCan && <path className={pathClassName(null)} d={geometry.headPath} />}
         {geometry.frontPaths.map((pathValue, index) => (
           <path
             className={pathClassName(geometry.frontNodeIds[index] ?? null)}

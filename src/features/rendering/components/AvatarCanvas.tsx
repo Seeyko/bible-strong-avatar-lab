@@ -46,6 +46,7 @@ import { type SurfaceConfig } from '@/features/avatar/surfaces'
 import { type CanvasPreviewTarget } from '@/features/rendering/canvasPreview'
 import { LivePixelAvatarCanvas } from '@/features/rendering/components/PixelAvatarCanvas'
 import { type RenderedRotationGizmo } from '@/features/rendering/renderedRotationGizmo'
+import { LiveCanonicalCanGraphic } from '@/features/rendering/components/CanonicalCanGraphic'
 import { OverlayPathList } from '@/features/rendering/components/OverlayPaths'
 import {
   findBodyNodePath,
@@ -562,7 +563,10 @@ export function AvatarCanvas({
     offsetY,
     overlayPaths,
     overlays,
+    canonicalCanTransform,
+    canonicalCanMarkup,
   } = scene
+  const useLockSvg = Boolean(canonicalCanMarkup.get())
   const svgRef = useRef<SVGSVGElement>(null)
   const [activeDragType, setActiveDragType] = useState<
     'arcball' | 'width' | 'height' | 'size' | 'spacing' | 'rotate' | null
@@ -798,7 +802,7 @@ export function AvatarCanvas({
       )}
       <svg
         ref={svgRef}
-        className={`avatar${overlays.current.length ? ' avatar-can' : ''}`}
+        className={`avatar${overlays.current.length || useLockSvg ? ' avatar-can' : ''}`}
         viewBox="-150 -150 300 300"
         role="img"
         aria-label={t('Avatar procédural')}
@@ -810,7 +814,7 @@ export function AvatarCanvas({
           <clipPath id="avatar-head-clip">
             <motion.path d={headPath} />
           </clipPath>
-          {overlays.current.length > 0 && (
+          {(overlays.current.length > 0 || useLockSvg) && (
             <filter id="avatar-paper-grain" x="-20%" y="-20%" width="140%" height="140%">
               <feTurbulence
                 type="fractalNoise"
@@ -828,8 +832,17 @@ export function AvatarCanvas({
         </defs>
         <motion.g
           style={{ x: offsetX, y: offsetY }}
-          filter={overlays.current.length ? 'url(#avatar-paper-grain)' : undefined}
+          filter={overlays.current.length || useLockSvg ? 'url(#avatar-paper-grain)' : undefined}
         >
+          <LiveCanonicalCanGraphic
+            transform={canonicalCanTransform}
+            markup={canonicalCanMarkup}
+            bodyColor={colors.body}
+            onPointerDown={event => {
+              onBodyNodeSelect('primary')
+              startDrag(event)
+            }}
+          />
           <OverlayPathList overlays={overlays.current} paths={overlayPaths} placement="back" />
           {backPaths.map((pathValue, index) => (
             <motion.path
@@ -839,15 +852,19 @@ export function AvatarCanvas({
               onPointerDown={event => selectBodyPath(event, backNodeIds.current[index])}
             />
           ))}
-          <motion.path
-            className={`avatar-head ${highlight === 'head' ? 'cyan-outline' : ''}`}
-            d={headPath}
-            onPointerDown={event => {
-              onBodyNodeSelect('primary')
-              startDrag(event)
-            }}
-          />
-          <g clipPath={overlays.current.length ? undefined : 'url(#avatar-head-clip)'}>
+          {!useLockSvg && (
+            <motion.path
+              className={`avatar-head ${highlight === 'head' ? 'cyan-outline' : ''}`}
+              d={headPath}
+              onPointerDown={event => {
+                onBodyNodeSelect('primary')
+                startDrag(event)
+              }}
+            />
+          )}
+          <g
+            clipPath={overlays.current.length || useLockSvg ? undefined : 'url(#avatar-head-clip)'}
+          >
             {(showWire || highlight === 'head') &&
               wirePaths.map((pathValue, index) => (
                 <motion.path className="wire" d={pathValue} key={index} />
@@ -887,7 +904,7 @@ export function AvatarCanvas({
             onCommit={onBodyNodeChange}
           />
         )}
-        {editor?.visible && (
+        {editor?.visible && !useLockSvg && (
           <g className="eye-editor">
             {activeDragType !== null && activeDragType !== 'arcball' && (
               <path className="selection-outline" d={editor.selectionPath} />

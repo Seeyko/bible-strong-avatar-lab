@@ -1,4 +1,4 @@
-import { overlayPaint } from '@bible-strong/avatar-core'
+import { overlayPaint, tintCanonicalCanMarkup } from '@bible-strong/avatar-core'
 
 import type { AvatarColors } from '../avatar/avatars'
 import type { RenderedScene } from '../rendering/renderedScene'
@@ -92,6 +92,8 @@ export const serializeAvatarSnapshot = (
   const offsetX = scene.offsetX.get()
   const offsetY = scene.offsetY.get()
   const overlays = scene.overlays.current
+  const lockMarkup = scene.canonicalCanMarkup.get()
+  const lockTransform = scene.canonicalCanTransform.get()
   const canEyes = overlays.length > 0
   const eyeFill = canEyes ? '#fffef8' : colors.eyes
   const headStroke = canEyes
@@ -101,11 +103,17 @@ export const serializeAvatarSnapshot = (
   const eyeGroup = canEyes
     ? `${path(scene.leftPath.get(), eyeFill, scene.leftOpacity.get(), eyeStroke)}${path(scene.rightPath.get(), eyeFill, scene.rightOpacity.get(), eyeStroke)}`
     : `<g clip-path="url(#snapshot-head-clip)">${path(scene.leftPath.get(), eyeFill, scene.leftOpacity.get())}${path(scene.rightPath.get(), eyeFill, scene.rightOpacity.get())}</g>`
+  const lockLayer = lockMarkup
+    ? `<g class="avatar-can-lock" transform="${escapeXml(lockTransform)}">${tintCanonicalCanMarkup(lockMarkup, { body: colors.body })}</g>`
+    : ''
   const body = [
+    lockLayer,
     overlayMarkup(overlays, colors, 'back'),
     ...backPaths.map(value => path(value, colors.body)),
-    headPath ? `<path d="${escapeXml(headPath)}" fill="${colors.body}"${headStroke}/>` : '',
-    eyeGroup,
+    !lockMarkup && headPath
+      ? `<path d="${escapeXml(headPath)}" fill="${colors.body}"${headStroke}/>`
+      : '',
+    lockMarkup ? '' : eyeGroup,
     ...frontPaths.map(value => path(value, colors.body)),
     overlayMarkup(overlays, colors, 'front'),
   ].join('')

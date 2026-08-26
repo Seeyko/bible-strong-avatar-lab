@@ -17,6 +17,7 @@ import {
   transformGraffitiPath,
   type GraffitiEyeId,
 } from './graffiti'
+import { poseCanonicalCan, resolveCanonicalCan, type CanonicalCanSource } from './canonicalCan'
 import {
   canBodyPath,
   canLocalOverlays,
@@ -53,6 +54,10 @@ export type Expression = {
   perspective: number
   eyeMotion: EyeMotion
   bodyMotion: BodyMotion
+  armHip?: number
+  armPoint?: number
+  legBack?: number
+  legFront?: number
   bodyColor?: string
   eyeColor?: string
   eyeGlyphLeft?: GraffitiEyeId
@@ -88,6 +93,7 @@ export type AvatarGeometry = {
   rightVisible: boolean
   wirePaths: string[]
   overlays: OverlayLayer[]
+  canonicalCan: CanonicalCanSource | null
 }
 
 export type RenderAvatarOptions = {
@@ -137,6 +143,10 @@ export const expressionFields: ExpressionNumericField[] = [
   'leftAngle',
   'rightAngle',
   'perspective',
+  'armHip',
+  'armPoint',
+  'legBack',
+  'legFront',
 ]
 
 export const clamp = (value: number, min: number, max: number) =>
@@ -497,29 +507,48 @@ const path = (points: Point3[], close = true) => {
     .join('')}${close ? 'Z' : ''}`
 }
 
-export const poseFromExpression = (expression: Expression): AvatarPose => ({
-  expression,
-  orientation: quaternionFromEuler(
-    radians(expression.headX),
-    radians(expression.headY),
-    radians(expression.headZ)
-  ),
+export const normalizeExpression = (expression: Expression): Expression => ({
+  ...expression,
+  armHip: expression.armHip ?? 0,
+  armPoint: expression.armPoint ?? 0,
+  legBack: expression.legBack ?? 0,
+  legFront: expression.legFront ?? 0,
 })
+
+export const poseFromExpression = (expression: Expression): AvatarPose => {
+  const normalized = normalizeExpression(expression)
+  return {
+    expression: normalized,
+    orientation: quaternionFromEuler(
+      radians(normalized.headX),
+      radians(normalized.headY),
+      radians(normalized.headZ)
+    ),
+  }
+}
+
+export const numericExpressionValue = (expression: Expression, field: ExpressionNumericField) =>
+  expression[field] ?? 0
 
 export const interpolatePose = (from: AvatarPose, to: AvatarPose, progress: number): AvatarPose => {
   const expression: Expression = { ...from.expression }
   expressionFields.forEach(field => {
-    let target = to.expression[field]
+    const origin = numericExpressionValue(from.expression, field)
+    let target = numericExpressionValue(to.expression, field)
     if (
       field === 'headX' ||
       field === 'headY' ||
       field === 'headZ' ||
       field === 'leftAngle' ||
-      field === 'rightAngle'
+      field === 'rightAngle' ||
+      field === 'armHip' ||
+      field === 'armPoint' ||
+      field === 'legBack' ||
+      field === 'legFront'
     ) {
-      target = nearestEquivalentAngle(target, from.expression[field])
+      target = nearestEquivalentAngle(target, origin)
     }
-    expression[field] = from.expression[field] + (target - from.expression[field]) * progress
+    expression[field] = origin + (target - origin) * progress
   })
   return {
     expression,
@@ -1409,25 +1438,43 @@ export const renderAvatar = (
   const compositePaths = compositeBackPaths(pose, surface)
   const graffiti = surface.type === 'graffiti'
   const can = surface.type === 'can'
+  const canonicalCan = can
+    ? poseCanonicalCan(resolveCanonicalCan(), {
+        expression: pose.expression,
+        blink,
+        spray: parseCanSpray(surface.canSpray),
+        eyeOffset: options.eyeOffset,
+      })
+    : null
+  const useLockSvg = Boolean(canonicalCan)
   return {
     backPaths: [...compositePaths, ...accessories.backPaths],
     frontPaths: accessories.frontPaths,
     backNodeIds: [...compositePaths.map(() => null), ...accessories.backNodeIds],
     frontNodeIds: accessories.frontNodeIds,
     headPath: headPath(pose, surface),
-    leftPath: graffiti
-      ? graffitiEyePath(pose, surface, -1, blink, options.eyeOffset)
-      : can
-        ? canPieEyePath(pose, surface, -1, blink, options.eyeOffset)
-        : path(left),
-    rightPath: graffiti
-      ? graffitiEyePath(pose, surface, 1, blink, options.eyeOffset)
-      : can
-        ? canPieEyePath(pose, surface, 1, blink, options.eyeOffset)
-        : path(right),
-    leftVisible: can || leftSamples.reduce((total, sample) => total + sample.normal[2], 0) > 0,
-    rightVisible: can || rightSamples.reduce((total, sample) => total + sample.normal[2], 0) > 0,
+    leftPath: useLockSvg
+      ? ''
+      : graffiti
+        ? graffitiEyePath(pose, surface, -1, blink, options.eyeOffset)
+        : can
+          ? canPieEyePath(pose, surface, -1, blink, options.eyeOffset)
+          : path(left),
+    rightPath: useLockSvg
+      ? ''
+      : graffiti
+        ? graffitiEyePath(pose, surface, 1, blink, options.eyeOffset)
+        : can
+          ? canPieEyePath(pose, surface, 1, blink, options.eyeOffset)
+          : path(right),
+    leftVisible:
+      !useLockSvg &&
+      (can || leftSamples.reduce((total, sample) => total + sample.normal[2], 0) > 0),
+    rightVisible:
+      !useLockSvg &&
+      (can || rightSamples.reduce((total, sample) => total + sample.normal[2], 0) > 0),
     wirePaths: options.includeWire === false ? [] : wirePaths(pose, surface),
-    overlays: can ? canOverlays(pose, surface, blink, options.eyeOffset) : [],
+    overlays: useLockSvg ? [] : can ? canOverlays(pose, surface, blink, options.eyeOffset) : [],
+    canonicalCan,
   }
 }

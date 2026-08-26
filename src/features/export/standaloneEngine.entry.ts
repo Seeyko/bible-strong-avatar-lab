@@ -1,4 +1,5 @@
 export { expressionFields, poseFromExpression, renderAvatar } from '../avatar/geometry'
+export { tintCanonicalCanMarkup } from '../avatar/geometry'
 export {
   ambientBodyOffset,
   ambientEyeOffset,

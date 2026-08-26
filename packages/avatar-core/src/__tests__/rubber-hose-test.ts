@@ -46,7 +46,7 @@ describe('RMP rubber-hose can', () => {
     expect(canLocalOverlays(false).length).toBeLessThan(overlays.length)
   })
 
-  it('renders a can head, pie eyes and overlays without extra primitives', () => {
+  it('renders the lock SVG without extra primitives once the can is ready', () => {
     const geometry = renderAvatar(
       poseFromExpression(canExpression),
       { ...surfacePresets.can, canSpray: true },
@@ -55,16 +55,11 @@ describe('RMP rubber-hose can', () => {
 
     expect(geometry.backPaths).toEqual([])
     expect(geometry.frontPaths).toEqual([])
-    expect(geometry.headPath).toContain('M')
-    expect(geometry.leftPath).toContain('M')
-    expect(geometry.rightPath).toContain('M')
-    expect(geometry.leftPath).not.toBe(geometry.rightPath)
-    expect(geometry.overlays.length).toBeGreaterThan(12)
-    expect(geometry.overlays.some(overlay => overlay.fill === 'paper')).toBe(true)
-    expect(geometry.overlays.some(overlay => overlay.placement === 'back')).toBe(true)
-    expect(geometry.overlays.some(overlay => overlay.placement === 'front')).toBe(true)
-    expect(geometry.leftVisible).toBe(true)
-    expect(geometry.rightVisible).toBe(true)
+    expect(geometry.overlays).toEqual([])
+    expect(geometry.canonicalCan).not.toBeNull()
+    expect(geometry.canonicalCan?.innerMarkup).toContain('data-rmp-part="body"')
+    expect(geometry.leftVisible).toBe(false)
+    expect(geometry.rightVisible).toBe(false)
   })
 
   it('hides the spray puff when canSpray is off', () => {
@@ -74,6 +69,7 @@ describe('RMP rubber-hose can', () => {
       { ...surfacePresets.can, canSpray: false },
       1
     )
-    expect(withoutSpray.overlays.length).toBeLessThan(withSpray.overlays.length)
+    expect(withSpray.canonicalCan?.innerMarkup).toContain('data-rmp-part="spray"')
+    expect(withoutSpray.canonicalCan?.innerMarkup).not.toContain('data-rmp-part="spray"')
   })
 })

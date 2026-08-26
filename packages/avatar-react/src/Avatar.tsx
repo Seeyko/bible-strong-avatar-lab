@@ -4,6 +4,7 @@ import {
   MAX_BODY_NODES,
   MAX_OVERLAY_PATHS,
   overlayPaint,
+  tintCanonicalCanMarkup,
   playAvatarAnimation,
   pauseAvatarPlayback,
   renderAvatarDefinition,
@@ -205,6 +206,7 @@ export function Avatar({
   const frontPathRefs = useRef<(SVGPathElement | null)[]>([])
   const backOverlayRefs = useRef<(SVGPathElement | null)[]>([])
   const frontOverlayRefs = useRef<(SVGPathElement | null)[]>([])
+  const canonicalCanRef = useRef<SVGGElement>(null)
   const defaultPlaybackStarted = useRef(false)
   const completedAnimation = useRef<AnimationKey | undefined>(undefined)
   const playbackRef = useRef<CorePlaybackState | null>(null)
@@ -232,7 +234,22 @@ export function Avatar({
       element?.setAttribute('d', frameScene.geometry.frontPaths[index] ?? '')
       element?.setAttribute('fill', frameScene.colors.body)
     })
+    const lock = frameScene.geometry.canonicalCan
+    if (canonicalCanRef.current) {
+      if (lock) {
+        canonicalCanRef.current.setAttribute('transform', lock.transform)
+        canonicalCanRef.current.innerHTML = tintCanonicalCanMarkup(lock.innerMarkup, {
+          body: frameScene.colors.body,
+        })
+      } else {
+        canonicalCanRef.current.removeAttribute('transform')
+        canonicalCanRef.current.innerHTML = ''
+      }
+    }
     const can = frameScene.geometry.overlays.length > 0
+    headPathRef.current?.setAttribute('display', lock ? 'none' : '')
+    leftPathRef.current?.setAttribute('display', lock ? 'none' : '')
+    rightPathRef.current?.setAttribute('display', lock ? 'none' : '')
     headPathRef.current?.setAttribute('stroke', can ? '#111316' : 'none')
     headPathRef.current?.setAttribute('stroke-width', can ? '5' : '0')
     headPathRef.current?.setAttribute('stroke-linejoin', 'round')
@@ -542,6 +559,7 @@ export function Avatar({
             key={`back-${index}`}
           />
         ))}
+        <g ref={canonicalCanRef} className="bs-avatar__can-lock" />
         <path ref={headPathRef} d={scene.geometry.headPath} fill={scene.colors.body} />
         <g
           clipPath={scene.geometry.overlays.length ? undefined : `url(#${clipId})`}

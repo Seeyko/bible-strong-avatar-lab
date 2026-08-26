@@ -575,6 +575,15 @@ const english: Record<string, string> = {
   Diamant: 'Diamond',
   'Bombe rubber-hose': 'Rubber-hose can',
   'Puff de spray': 'Spray puff',
+  'Membres rubber-hose': 'Rubber-hose limbs',
+  'Bras hanche': 'Hip arm',
+  'Bras qui pointe': 'Pointing arm',
+  'Jambe arrière': 'Back leg',
+  'Jambe avant': 'Front leg',
+  'Oriente le corps, la tête, le spray et les yeux ensemble.':
+    'Orients the body, head, spray and eyes together.',
+  'Les quatre membres tournent autour de leur épaule ou hanche.':
+    'The four limbs rotate around their shoulder or hip.',
   Masqué: 'Hidden',
   Visible: 'Visible',
   'Anneau graffiti': 'Graffiti ring',

@@ -4,6 +4,7 @@ import {
   MAX_BODY_NODES,
   MAX_OVERLAY_PATHS,
   overlayPaint,
+  tintCanonicalCanMarkup,
   pauseAvatarPlayback,
   playAvatarAnimation,
   renderAvatarDefinition,
@@ -135,6 +136,8 @@ export function createAvatar(
   const backOverlays = Array.from({ length: overlayPathSlots }, () => createSvgElement('path'))
   const backPaths = Array.from({ length: bodyPathSlots }, () => createSvgElement('path'))
   const headPath = createSvgElement('path')
+  const canonicalCan = createSvgElement('g')
+  canonicalCan.setAttribute('class', 'bs-avatar__can-lock')
   const eyeGroup = createSvgElement('g')
   eyeGroup.setAttribute('clip-path', `url(#${clipId})`)
   const leftPath = createSvgElement('path')
@@ -142,7 +145,15 @@ export function createAvatar(
   eyeGroup.append(leftPath, rightPath)
   const frontPaths = Array.from({ length: bodyPathSlots }, () => createSvgElement('path'))
   const frontOverlays = Array.from({ length: overlayPathSlots }, () => createSvgElement('path'))
-  svg.append(...backOverlays, ...backPaths, headPath, eyeGroup, ...frontPaths, ...frontOverlays)
+  svg.append(
+    ...backOverlays,
+    ...backPaths,
+    canonicalCan,
+    headPath,
+    eyeGroup,
+    ...frontPaths,
+    ...frontOverlays
+  )
   host.append(svg)
   mount.append(host)
 
@@ -168,6 +179,16 @@ export function createAvatar(
       element.setAttribute('d', scene.geometry.frontPaths[index] ?? '')
       element.setAttribute('fill', scene.colors.body)
     })
+    const lock = scene.geometry.canonicalCan
+    if (lock) {
+      canonicalCan.setAttribute('transform', lock.transform)
+      canonicalCan.innerHTML = tintCanonicalCanMarkup(lock.innerMarkup, { body: scene.colors.body })
+    } else {
+      canonicalCan.removeAttribute('transform')
+      canonicalCan.innerHTML = ''
+    }
+    headPath.setAttribute('display', lock ? 'none' : '')
+    eyeGroup.setAttribute('display', lock ? 'none' : '')
     const can = scene.geometry.overlays.length > 0
     eyeGroup.setAttribute('clip-path', can ? '' : `url(#${clipId})`)
     headPath.setAttribute('stroke', can ? '#111316' : 'none')

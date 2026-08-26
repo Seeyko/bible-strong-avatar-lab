@@ -124,6 +124,7 @@ function mountAvatar(target, options = {}) {
   const backOverlayLayer = svgElement('g');
   const backLayer = svgElement('g');
   const head = svgElement('path');
+  const canonicalCan = svgElement('g');
   const eyesLayer = svgElement('g');
   const leftEye = svgElement('path');
   const rightEye = svgElement('path');
@@ -131,7 +132,7 @@ function mountAvatar(target, options = {}) {
   const frontOverlayLayer = svgElement('g');
   eyesLayer.setAttribute('clip-path', 'url(#' + clipId + ')');
   eyesLayer.append(leftEye, rightEye);
-  motionLayer.append(backOverlayLayer, backLayer, head, eyesLayer, frontLayer, frontOverlayLayer);
+  motionLayer.append(backOverlayLayer, backLayer, canonicalCan, head, eyesLayer, frontLayer, frontOverlayLayer);
   svg.append(motionLayer);
   const renderElement = pixelStyle ? canvas : svg;
   host.replaceChildren(renderElement);
@@ -204,6 +205,18 @@ function mountAvatar(target, options = {}) {
     motionLayer.setAttribute('transform', 'translate(' + offset.x + ' ' + offset.y + ')');
     ensurePaths(backLayer, geometry.backPaths, currentColors.body);
     ensurePaths(frontLayer, geometry.frontPaths, currentColors.body);
+    const lock = geometry.canonicalCan;
+    if (lock) {
+      canonicalCan.setAttribute('transform', lock.transform);
+      canonicalCan.innerHTML = AvatarProceduralEngine.tintCanonicalCanMarkup(lock.innerMarkup, {
+        body: currentColors.body,
+      });
+    } else {
+      canonicalCan.removeAttribute('transform');
+      canonicalCan.innerHTML = '';
+    }
+    head.setAttribute('display', lock ? 'none' : '');
+    eyesLayer.setAttribute('display', lock ? 'none' : '');
     const overlays = geometry.overlays || [];
     const can = overlays.length > 0;
     eyesLayer.setAttribute('clip-path', can ? '' : 'url(#' + clipId + ')');
@@ -251,8 +264,9 @@ function mountAvatar(target, options = {}) {
       ambientStrength = clamp01(eased);
       const expression = { ...transitionState.fromPose.expression };
       AvatarProceduralEngine.expressionFields.forEach(field => {
-        expression[field] = transitionState.fromPose.expression[field] +
-          (transitionState.toPose.expression[field] - transitionState.fromPose.expression[field]) * eased;
+        const from = transitionState.fromPose.expression[field] ?? 0;
+        const to = transitionState.toPose.expression[field] ?? 0;
+        expression[field] = from + (to - from) * eased;
       });
       expression.eyeMotion = transitionState.toPose.expression.eyeMotion;
       expression.bodyMotion = transitionState.toPose.expression.bodyMotion;
