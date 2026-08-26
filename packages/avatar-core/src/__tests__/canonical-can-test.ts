@@ -3,6 +3,7 @@ import {
   CANONICAL_CAN_SESSION_FILL,
   applyCanonicalCanOptions,
   canonicalCanFitTransform,
+  canonicalCanLean,
   isCanonicalCanReady,
   parseCanonicalCanSource,
   poseCanonicalCanMarkup,
@@ -10,6 +11,13 @@ import {
   tintCanonicalCanMarkup,
 } from '../canonicalCan'
 import { canonicalCanLimbAngles } from '../canLimbs'
+import {
+  CAN_KID_ORANGE,
+  CAN_KID_VIEWBOX,
+  buildCanKidStaticMarkup,
+  buildCanKidSvg,
+  isCleanGeometricMarkup,
+} from '../canKidGeometry'
 import { surfacePresets } from '../surfaces'
 
 const pendingAsset = `<svg viewBox="-150 -150 300 300" data-rmp-canonical="pending"></svg>`
@@ -122,7 +130,11 @@ describe('canonical Can Kid SVG hook', () => {
     expect(markup).toContain('translate(40.00 0)')
     const canOpen = markup.indexOf('data-rmp-part="can"')
     const canClose = markup.indexOf('data-rmp-part="arm-point"')
-    expect(markup.slice(canOpen, canClose)).not.toContain('data-rmp-part="spray"')
+    expect(markup.slice(canOpen, canClose)).toContain('data-rmp-part="spray"')
+    expect(markup).toContain('data-rmp-fill="puff"')
+    expect(markup).toContain(CAN_KID_ORANGE)
+    expect(markup).toMatch(/<ellipse[^>]+data-rmp-fill="puff"/)
+    expect(markup).toMatch(/<circle[^>]+data-rmp-fill="puff"/)
   })
 
   it('refuses the jet when the body cannot spray, even if the clip asks for it', () => {
@@ -160,7 +172,6 @@ describe('canonical Can Kid SVG hook', () => {
     expect(canMarkup).toContain('rotate(18')
     expect(canMarkup).toContain('data-rmp-part="body"')
     expect(canMarkup).toContain('data-rmp-part="eyes"')
-    expect(canMarkup).not.toContain('data-rmp-part="spray"')
     expect(canMarkup).not.toContain('data-rmp-part="arm-hip"')
     expect(canMarkup).not.toContain('data-rmp-part="leg-front"')
     expect(posed).toContain('data-rmp-procedural="limb"')
@@ -183,18 +194,43 @@ describe('canonical Can Kid SVG hook', () => {
     expect(sliders).toContain('rotate(-11')
   })
 
-  it('covers the baked face and keeps the lock smile on the eyes layer', () => {
+  it('draws one clipped geometric face on the body, without baked plates', () => {
     const source = resolveCanonicalCan()
     expect(source).not.toBeNull()
     if (!source) return
-    expect(source.innerMarkup).not.toContain('translate(385,550)')
+    expect(isCleanGeometricMarkup(source.innerMarkup)).toBe(true)
+    expect(isCleanGeometricMarkup(buildCanKidSvg())).toBe(true)
+    expect(source.innerMarkup).toBe(buildCanKidStaticMarkup())
+    expect(source.innerMarkup).not.toMatch(/M0,0\s*L/)
+    expect(source.innerMarkup).not.toContain('data-rmp-face-plate')
     const posed = poseCanonicalCanMarkup(source.innerMarkup, { expression: idle }, source.viewBox)
     expect(posed).toContain('data-rmp-part="mouth"')
     expect(posed).toContain('data-rmp-part="eye-glyphs"')
-    const bodyStart = posed.indexOf('data-rmp-part="body"')
-    const eyesStart = posed.indexOf('data-rmp-part="eyes"')
-    expect(posed.slice(bodyStart, eyesStart)).toContain('data-rmp-face-plate="eyes"')
-    expect(posed.slice(bodyStart, eyesStart)).toContain('data-rmp-face-plate="mouth"')
+    expect(posed).toContain('clip-path="url(#rmp-can-face-clip)"')
+    expect(posed).toContain('data-rmp-part="face"')
+    expect(posed).not.toContain('data-rmp-face-plate')
+    expect(posed.match(/data-rmp-part="mouth"/g)).toHaveLength(1)
+  })
+
+  it('turns headX/Y/Z and stageX into visible can motion instead of a no-op', () => {
+    const rest = canonicalCanLean(CAN_KID_VIEWBOX, 0, 0, 0)
+    const yaw = canonicalCanLean(CAN_KID_VIEWBOX, 0, 42, 0)
+    const pitch = canonicalCanLean(CAN_KID_VIEWBOX, 36, 0, 0)
+    const roll = canonicalCanLean(CAN_KID_VIEWBOX, 0, 0, 18)
+    expect(rest.can).not.toContain('scale(')
+    expect(yaw.can).toMatch(/scale\((0\.[0-6]|0\.7[0-4])/)
+    expect(pitch.can).toMatch(/scale\(1 0\.[0-8]/)
+    expect(Math.abs(Number(yaw.can.match(/translate\(([-\d.]+)/)?.[1] ?? 0))).toBeGreaterThan(40)
+    expect(roll.can).toContain('rotate(18')
+    expect(yaw.can).not.toBe(rest.can)
+    expect(yaw.limbs).not.toContain('scale(')
+    const posed = poseCanonicalCanMarkup(buildCanKidStaticMarkup(), {
+      expression: { ...idle, headY: 42, headX: 20 },
+      stageX: -120,
+    })
+    expect(posed).toContain('translate(-120.00 0)')
+    expect(posed).toContain('data-rmp-part="can"')
+    expect(posed).toContain('scale(')
   })
 
   it('swings the limbs when idle head values change, and honors pose sliders', () => {

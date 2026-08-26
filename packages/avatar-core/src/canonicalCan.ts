@@ -1,15 +1,21 @@
-import canonicalCanSvgSource from './assets/can-kid.svg?raw'
+import {
+  CAN_KID_ORANGE,
+  CAN_KID_PIVOTS,
+  CAN_KID_VIEWBOX,
+  buildCanKidStaticMarkup,
+  canKidFaceClipMarkup,
+} from './canKidGeometry'
 import {
   CANONICAL_CAN_LIMB_RESTS,
   canonicalCanBadgeMarkup,
-  canonicalCanFacePlateMarkup,
   canonicalCanLimbAngles,
   canonicalCanSmileMarkup,
   proceduralCanonicalCanLimbMarkup,
   proceduralCanonicalCanSprayMarkup,
 } from './canLimbs'
+import canonicalCanSvgSource from './assets/can-kid.svg?raw'
 
-export const CANONICAL_CAN_SESSION_FILL = '#ee682a'
+export const CANONICAL_CAN_SESSION_FILL = CAN_KID_ORANGE
 
 export const CANONICAL_CAN_PARTS = [
   'shadow',
@@ -49,17 +55,17 @@ export type CanonicalCanSource = {
   transform: string
 }
 
-const defaultViewBox: CanonicalCanViewBox = { x: 0, y: 0, width: 1024, height: 1024 }
+const defaultViewBox: CanonicalCanViewBox = { ...CAN_KID_VIEWBOX }
 
 const defaultPivots: Record<CanonicalCanPartId, CanonicalCanPivot> = {
-  shadow: { x: 320, y: 940 },
-  spray: { x: 400, y: 230 },
-  'arm-hip': { x: 210, y: 490 },
-  'arm-point': { x: 430, y: 505 },
-  'leg-back': { x: 255, y: 705 },
-  'leg-front': { x: 375, y: 705 },
-  eyes: { x: 320, y: 460 },
-  body: { x: 320, y: 520 },
+  shadow: { ...CAN_KID_PIVOTS.shadow },
+  spray: { ...CAN_KID_PIVOTS.spray },
+  'arm-hip': { ...CAN_KID_PIVOTS['arm-hip'] },
+  'arm-point': { ...CAN_KID_PIVOTS['arm-point'] },
+  'leg-back': { ...CAN_KID_PIVOTS['leg-back'] },
+  'leg-front': { ...CAN_KID_PIVOTS['leg-front'] },
+  eyes: { ...CAN_KID_PIVOTS.eyes },
+  body: { ...CAN_KID_PIVOTS.body },
 }
 
 const groupPattern = /<g\b([^>]*)data-rmp-part="([^"]+)"([^>]*)>([\s\S]*?)<\/g>/gi
@@ -132,10 +138,10 @@ export const applyCanonicalCanOptions = (
   return options.spray === false ? stripCanonicalCanPuff(tinted) : tinted
 }
 
-export const canonicalCanFitTransform = (viewBox: CanonicalCanViewBox, size = 240) => {
+export const canonicalCanFitTransform = (viewBox: CanonicalCanViewBox, size = 214) => {
   const scale = size / Math.max(viewBox.width, viewBox.height)
-  const centerX = viewBox.x + viewBox.width / 2
-  const centerY = viewBox.y + viewBox.height / 2
+  const centerX = viewBox.x + viewBox.width * 0.4
+  const centerY = viewBox.y + viewBox.height * 0.5
   return `scale(${scale}) translate(${-centerX} ${-centerY})`
 }
 
@@ -155,6 +161,11 @@ const scaleAround = (scaleX: number, scaleY: number, pivot: CanonicalCanPivot) =
   return `translate(${pivot.x} ${pivot.y}) scale(${scaleX} ${scaleY}) translate(${-pivot.x} ${-pivot.y})`
 }
 
+const skewAround = (skewX: number, pivot: CanonicalCanPivot) => {
+  if (Math.abs(skewX) < 0.35) return ''
+  return `translate(${pivot.x} ${pivot.y}) skewX(${skewX.toFixed(2)}) translate(${-pivot.x} ${-pivot.y})`
+}
+
 const joinTransforms = (...parts: string[]) => parts.filter(Boolean).join(' ')
 
 export const canonicalCanLean = (
@@ -164,21 +175,27 @@ export const canonicalCanLean = (
   headZ: number
 ) => {
   const pivot = {
-    x: viewBox.x + viewBox.width * 0.31,
-    y: viewBox.y + viewBox.height * 0.51,
+    x: viewBox.x + viewBox.width * 0.35,
+    y: viewBox.y + viewBox.height * 0.5,
   }
   const pitch = (headX * Math.PI) / 180
   const yaw = (headY * Math.PI) / 180
-  const scaleX = Math.sign(Math.cos(yaw) || 1) * Math.max(0.88, Math.abs(Math.cos(yaw)))
-  const scaleY = Math.max(0.9, Math.abs(Math.cos(pitch)))
-  const shiftX = Math.sin(yaw) * viewBox.width * 0.035
-  const shiftY = Math.sin(pitch) * viewBox.height * 0.025
+  const scaleX = Math.sign(Math.cos(yaw) || 1) * Math.max(0.4, Math.abs(Math.cos(yaw)))
+  const scaleY = Math.max(0.52, Math.abs(Math.cos(pitch)))
+  const shiftX = Math.sin(yaw) * viewBox.width * 0.12
+  const shiftY = Math.sin(pitch) * viewBox.height * 0.075
   const translate = `translate(${shiftX} ${shiftY})`
   const rotate = rotateAround(headZ, pivot)
   return {
     pivot,
-    can: joinTransforms(translate, rotate, scaleAround(scaleX, scaleY, pivot)),
+    can: joinTransforms(
+      translate,
+      rotate,
+      scaleAround(scaleX, scaleY, pivot),
+      skewAround(Math.sin(yaw) * -9, pivot)
+    ),
     limbs: joinTransforms(translate, rotate),
+    face: `translate(${Math.sin(yaw) * 22} ${Math.sin(pitch) * 14})`,
   }
 }
 
@@ -232,11 +249,19 @@ export const poseCanonicalCanMarkup = (
   const stageX = input.stageX ?? 0
   const prepared = stripCanonicalCanPuff(markup)
   const lean = canonicalCanLean(viewBox, expression.headX, expression.headY, expression.headZ)
-  const lookX =
-    (expression.positionXLeft + expression.positionXRight) / 2 +
-    (expression.spacing - 44) * 0.12 +
-    offset.x * 0.45
-  const lookY = (expression.positionYLeft + expression.positionYRight) / 2 + 10 + offset.y * 0.45
+  const lookX = Math.max(
+    -22,
+    Math.min(
+      22,
+      (expression.positionXLeft + expression.positionXRight) / 2 +
+        (expression.spacing - 44) * 0.12 +
+        offset.x * 0.45
+    )
+  )
+  const lookY = Math.max(
+    -20,
+    Math.min(20, (expression.positionYLeft + expression.positionYRight) / 2 + 10 + offset.y * 0.45)
+  )
   const eyeScaleX = Math.max(0.55, (expression.widthLeft + expression.widthRight) / 64)
   const eyeScaleY = Math.max(0.12, ((expression.heightLeft + expression.heightRight) / 80) * blink)
   const eyeTilt = (expression.leftAngle + expression.rightAngle) / 2
@@ -257,7 +282,7 @@ export const poseCanonicalCanMarkup = (
   const lockGroup = (part: CanonicalCanPartId, inner: string, transform = '') => {
     const pivot = groups.get(part)?.pivot ?? defaultPivots[part]
     const attribute = transform ? ` transform="${transform}"` : ''
-    return `<g data-rmp-part="${part}" data-rmp-pivot="${pivot.x},${pivot.y}"${attribute}>${inner}</g>`
+    return `<g data-rmp-part="${part}" data-rmp-pivot="${pivot.x},${pivot.y}" data-rmp-geometry="clean"${attribute}>${inner}</g>`
   }
 
   const limbGroup = (part: keyof typeof CANONICAL_CAN_LIMB_RESTS, angle: number) => {
@@ -268,21 +293,23 @@ export const poseCanonicalCanMarkup = (
 
   const eyesPivot = groups.get('eyes')?.pivot ?? defaultPivots.eyes
   const eyeMotion = joinTransforms(
+    lean.face,
     `translate(${lookX} ${lookY})`,
     rotateAround(eyeTilt, eyesPivot),
     scaleAround(eyeScaleX, eyeScaleY, eyesPivot)
   )
   const eyesInner = groups.get('eyes')?.inner ?? ''
-  const bodyInner = `${groups.get('body')?.inner ?? ''}${canonicalCanFacePlateMarkup()}`
+  const bodyInner = groups.get('body')?.inner ?? ''
   const shadow = lockGroup('shadow', groups.get('shadow')?.inner ?? '')
-  const canInner = `${lockGroup('body', bodyInner)}${lockGroup(
+  const face = `<g data-rmp-part="face" clip-path="url(#rmp-can-face-clip)">${lockGroup(
     'eyes',
     `<g data-rmp-part="eye-glyphs"${eyeMotion ? ` transform="${eyeMotion}"` : ''}>${eyesInner}</g><g data-rmp-part="mouth">${canonicalCanSmileMarkup()}</g>`
-  )}`
-  const can = lean.can ? `<g data-rmp-part="can" transform="${lean.can}">${canInner}</g>` : canInner
-  const character = `${shadow}${limbGroup('leg-back', limbs.legBack)}${limbGroup('arm-hip', limbs.armHip)}${can}${limbGroup('arm-point', limbs.armPoint)}${limbGroup('leg-front', limbs.legFront)}${proceduralCanonicalCanSprayMarkup(sprayProgress)}${canonicalCanBadgeMarkup(badgeProgress)}`
+  )}</g>`
+  const canInner = `${lockGroup('body', bodyInner)}${face}${proceduralCanonicalCanSprayMarkup(sprayProgress)}`
+  const can = `<g data-rmp-part="can"${lean.can ? ` transform="${lean.can}"` : ''}>${canInner}</g>`
+  const character = `${shadow}${limbGroup('leg-back', limbs.legBack)}${limbGroup('arm-hip', limbs.armHip)}${can}${limbGroup('arm-point', limbs.armPoint)}${limbGroup('leg-front', limbs.legFront)}${canonicalCanBadgeMarkup(badgeProgress)}`
 
-  return `<g data-rmp-part="stage" transform="translate(${stageX.toFixed(2)} 0)">${character}</g>`
+  return `<g data-rmp-part="stage" transform="translate(${stageX.toFixed(2)} 0)"><defs>${canKidFaceClipMarkup()}</defs>${character}</g>`
 }
 
 export const poseCanonicalCan = (
@@ -303,7 +330,13 @@ export const serializeCanonicalCanLayer = (
 ) =>
   `<g class="avatar-can-lock" transform="${source.transform}">${tintCanonicalCanMarkup(source.innerMarkup, colors)}</g>`
 
-export const resolveCanonicalCan = (source = canonicalCanSvgSource) =>
-  parseCanonicalCanSource(source)
+export const resolveCanonicalCan = (source?: string) => {
+  if (source !== undefined) return parseCanonicalCanSource(source)
+  return {
+    innerMarkup: buildCanKidStaticMarkup(),
+    viewBox: { ...CAN_KID_VIEWBOX },
+    transform: canonicalCanFitTransform(CAN_KID_VIEWBOX),
+  }
+}
 
 export const canonicalCanLimbPart = (limb: CanonicalCanLimbId) => LIMB_PART[limb]
