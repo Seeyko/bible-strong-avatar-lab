@@ -1,0 +1,29 @@
+# Dokploy watch path: this file (repository root).
+# Recette light : build Vite statique → busybox httpd sur le port 80.
+#
+# Secrets / host viennent de l’environnement Dokploy.
+# Idle quasi zéro : aucun process applicatif, juste httpd.
+
+services:
+  avatar-lab:
+    build: .
+    image: bible-strong-avatar-lab:${APP_VERSION:-latest}
+    restart: unless-stopped
+    expose:
+      - '80'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.avatar-lab.rule=Host(`${AVATAR_LAB_HOST:-avatars.tomandrieu.com}`)'
+      - 'traefik.http.routers.avatar-lab.entrypoints=websecure'
+      - 'traefik.http.routers.avatar-lab.tls.certResolver=letsencrypt'
+      - 'traefik.http.routers.avatar-lab.service=avatar-lab'
+      - 'traefik.http.services.avatar-lab.loadbalancer.server.port=80'
+      - 'traefik.http.middlewares.avatar-lab-ratelimit.ratelimit.average=15'
+      - 'traefik.http.middlewares.avatar-lab-ratelimit.ratelimit.burst=60'
+      - 'traefik.http.routers.avatar-lab.middlewares=avatar-lab-ratelimit'
+    networks:
+      - dokploy-network
+
+networks:
+  dokploy-network:
+    external: true

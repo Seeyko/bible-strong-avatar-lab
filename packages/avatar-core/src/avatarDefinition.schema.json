@@ -66,7 +66,17 @@
       "required": ["type", "width", "height", "depth", "roundness"],
       "properties": {
         "type": {
-          "enum": ["sphere", "mickey", "cursor", "cube", "capsule", "cylinder", "cone", "diamond"]
+          "enum": [
+            "sphere",
+            "mickey",
+            "cursor",
+            "cube",
+            "capsule",
+            "cylinder",
+            "cone",
+            "diamond",
+            "graffiti"
+          ]
         },
         "width": { "$ref": "#/$defs/dimension" },
         "height": { "$ref": "#/$defs/dimension" },
@@ -74,7 +84,10 @@
         "roundness": { "$ref": "#/$defs/roundness" },
         "morphRoundness": { "$ref": "#/$defs/roundness" },
         "tipRoundness": { "$ref": "#/$defs/roundness" },
-        "baseRoundness": { "$ref": "#/$defs/roundness" }
+        "baseRoundness": { "$ref": "#/$defs/roundness" },
+        "graffitiRing": {
+          "enum": ["thick", "brush", "uniform-left", "uniform", "uniform-right"]
+        }
       }
     },
     "nodeSurface": {
@@ -148,7 +161,27 @@
         "height": { "$ref": "#/$defs/boundedNumber" },
         "x": { "$ref": "#/$defs/boundedNumber" },
         "y": { "$ref": "#/$defs/boundedNumber" },
-        "angle": { "$ref": "#/$defs/boundedNumber" }
+        "angle": { "$ref": "#/$defs/boundedNumber" },
+        "glyph": {
+          "enum": [
+            "blob-00",
+            "blob-01",
+            "blob-02",
+            "blob-03",
+            "blob-04",
+            "blob-05",
+            "blob-06",
+            "blob-07",
+            "blob-08",
+            "blob-09",
+            "blob-10",
+            "blob-11",
+            "blob-12",
+            "blob-13",
+            "blob-14",
+            "blob-15"
+          ]
+        }
       }
     },
     "expression": {

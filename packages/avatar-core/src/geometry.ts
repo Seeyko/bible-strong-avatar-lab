@@ -6,6 +6,17 @@ import {
   type SurfaceConfig,
 } from './surfaces'
 import type { BodyNode } from './body'
+import {
+  DEFAULT_GRAFFITI_EYE,
+  DEFAULT_GRAFFITI_EYE_RIGHT,
+  DEFAULT_GRAFFITI_RING,
+  graffitiEyePaths,
+  graffitiRingPaths,
+  parseGraffitiRingId,
+  resolveGraffitiEyeGlyph,
+  transformGraffitiPath,
+  type GraffitiEyeId,
+} from './graffiti'
 
 export type Quaternion = readonly [number, number, number, number]
 export type Point3 = readonly [number, number, number]
@@ -34,11 +45,20 @@ export type Expression = {
   bodyMotion: BodyMotion
   bodyColor?: string
   eyeColor?: string
+  eyeGlyphLeft?: GraffitiEyeId
+  eyeGlyphRight?: GraffitiEyeId
 }
 
 export type ExpressionNumericField = Exclude<
   keyof Expression,
-  'id' | 'semanticKey' | 'bodyColor' | 'eyeColor' | 'eyeMotion' | 'bodyMotion'
+  | 'id'
+  | 'semanticKey'
+  | 'bodyColor'
+  | 'eyeColor'
+  | 'eyeMotion'
+  | 'bodyMotion'
+  | 'eyeGlyphLeft'
+  | 'eyeGlyphRight'
 >
 
 export type AvatarPose = {
@@ -519,6 +539,7 @@ const surfaceCacheKey = (surface: SurfaceConfig) =>
     surface.morphRoundness,
     surface.tipRoundness,
     surface.baseRoundness,
+    surface.graffitiRing,
   ])
 
 const cacheSurfaceValue = <Value>(cache: Map<string, Value>, key: string, value: Value) => {
@@ -1117,7 +1138,61 @@ const projectedCapsulePath = (pose: AvatarPose, surface: SurfaceConfig) => {
   return smoothHullPath(convexHull([...ellipsePoints(top), ...ellipsePoints(bottom)]))
 }
 
+const graffitiDecalTransform = (pose: AvatarPose, surface: SurfaceConfig) => {
+  const ellipse = projectedEllipsoid(pose, [
+    surface.width / 2,
+    surface.height / 2,
+    surface.depth / 2,
+  ])
+  const radius = ellipse ? (ellipse.majorRadius + ellipse.minorRadius) / 2 : surface.width / 2
+  return {
+    centerX: ellipse?.centerX ?? 0,
+    centerY: ellipse?.centerY ?? 0,
+    scaleX: radius / 120,
+    scaleY: radius / 120,
+    rotation: 0,
+  }
+}
+
+const graffitiHeadPath = (pose: AvatarPose, surface: SurfaceConfig) => {
+  const ringId = parseGraffitiRingId(surface.graffitiRing, DEFAULT_GRAFFITI_RING)
+  return transformGraffitiPath(graffitiRingPaths[ringId], graffitiDecalTransform(pose, surface))
+}
+
+const graffitiEyePath = (
+  pose: AvatarPose,
+  surface: SurfaceConfig,
+  side: -1 | 1,
+  blink: number,
+  offset: Readonly<{ x: number; y: number }> = { x: 0, y: 0 }
+) => {
+  const expression = pose.expression
+  const suffix = side < 0 ? 'Left' : 'Right'
+  const width = expression[`width${suffix}`]
+  const restingHeight = expression[`height${suffix}`]
+  const height = 5 + (restingHeight - 5) * blink
+  const preferred =
+    (side < 0 ? expression.eyeGlyphLeft : expression.eyeGlyphRight) ??
+    (side < 0 ? DEFAULT_GRAFFITI_EYE : DEFAULT_GRAFFITI_EYE_RIGHT)
+  const glyph = resolveGraffitiEyeGlyph(width, height, preferred)
+  const center = projectFacePoint(
+    pose,
+    surface,
+    (side * expression.spacing) / 2 + expression[`positionX${suffix}`] + offset.x,
+    expression[`positionY${suffix}`] + offset.y
+  ).point
+  const angle = radians(side < 0 ? expression.leftAngle : expression.rightAngle)
+  return transformGraffitiPath(graffitiEyePaths[glyph], {
+    centerX: center[0],
+    centerY: center[1],
+    scaleX: width / 24,
+    scaleY: height / 30,
+    rotation: angle,
+  })
+}
+
 const headPath = (pose: AvatarPose, surface: SurfaceConfig) => {
+  if (surface.type === 'graffiti') return graffitiHeadPath(pose, surface)
   if (surface.type === 'sphere' || surface.type === 'mickey') {
     const exactPath = projectedEllipsoidPath(pose, surface)
     if (exactPath) return exactPath
@@ -1246,14 +1321,15 @@ export const renderAvatar = (
   const right = rightSamples.map(sample => sample.point)
   const accessories = accessoryLayers(pose, options.bodyNodes ?? [])
   const compositePaths = compositeBackPaths(pose, surface)
+  const graffiti = surface.type === 'graffiti'
   return {
     backPaths: [...compositePaths, ...accessories.backPaths],
     frontPaths: accessories.frontPaths,
     backNodeIds: [...compositePaths.map(() => null), ...accessories.backNodeIds],
     frontNodeIds: accessories.frontNodeIds,
     headPath: headPath(pose, surface),
-    leftPath: path(left),
-    rightPath: path(right),
+    leftPath: graffiti ? graffitiEyePath(pose, surface, -1, blink, options.eyeOffset) : path(left),
+    rightPath: graffiti ? graffitiEyePath(pose, surface, 1, blink, options.eyeOffset) : path(right),
     leftVisible: leftSamples.reduce((total, sample) => total + sample.normal[2], 0) > 0,
     rightVisible: rightSamples.reduce((total, sample) => total + sample.normal[2], 0) > 0,
     wirePaths: options.includeWire === false ? [] : wirePaths(pose, surface),

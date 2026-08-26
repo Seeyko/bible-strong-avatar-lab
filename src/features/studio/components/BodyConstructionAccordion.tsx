@@ -16,8 +16,10 @@ import { NumericField } from '@/app/components/controls'
 import { getPreviewGeometry, scaleSurface } from '@/app/studio-utils'
 import { bodyPrimitiveTypes, MAX_BODY_NODES, type BodyNode } from '@/features/avatar/body'
 import { SurfaceThumbnail } from '@/features/avatar/components/ExpressionWorkspace'
+import { GraffitiRingGrid } from '@/features/avatar/components/GraffitiPickers'
 import { surfaceLabels, surfacePresets, type SurfaceConfig } from '@/features/avatar/surfaces'
 import type { StudioController } from '@/features/studio/useStudioController'
+import { DEFAULT_GRAFFITI_RING, type GraffitiRingId } from '@bible-strong/avatar-core'
 
 function BodyStructureThumbnail({
   surface,
@@ -139,6 +141,21 @@ export function BodyConstructionAccordion({
                 )
               })}
             </div>
+            <p className="graffiti-picker-label">{t('Anneaux graffiti')}</p>
+            <GraffitiRingGrid
+              value={
+                surface.type === 'graffiti'
+                  ? (surface.graffitiRing ?? DEFAULT_GRAFFITI_RING)
+                  : undefined
+              }
+              onChange={(graffitiRing: GraffitiRingId) =>
+                updateSurface({
+                  ...(surface.type === 'graffiti' ? surface : surfacePresets.graffiti),
+                  type: 'graffiti',
+                  graffitiRing,
+                })
+              }
+            />
             <div className="surface-fields">
               <NumericField
                 label="Échelle"

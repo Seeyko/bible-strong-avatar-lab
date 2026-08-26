@@ -1,5 +1,6 @@
 import Ajv2020, { type ErrorObject } from 'ajv/dist/2020.js'
 import avatarDefinitionSchema from './avatarDefinition.schema.json'
+import type { GraffitiEyeId, GraffitiRingId } from './graffiti'
 import type { SurfaceType } from './surfaces'
 
 export const AVATAR_DEFINITION_MAX_BYTES = 262_144
@@ -41,9 +42,10 @@ export type SurfaceDefinition<TType extends SurfaceType = SurfaceType> = {
   morphRoundness?: number
   tipRoundness?: number
   baseRoundness?: number
+  graffitiRing?: GraffitiRingId
 }
 
-export type BodyNodeSurfaceType = Exclude<SurfaceType, 'mickey' | 'cursor'>
+export type BodyNodeSurfaceType = Exclude<SurfaceType, 'mickey' | 'cursor' | 'graffiti'>
 export type PrimarySurfaceDefinition = SurfaceDefinition<SurfaceType>
 export type BodyNodeSurfaceDefinition = SurfaceDefinition<BodyNodeSurfaceType>
 
@@ -61,8 +63,22 @@ export type AvatarBodyDefinition = {
 export type AvatarExpressionDefinition = {
   head: { x: number; y: number; z: number }
   eyes: {
-    left: { width: number; height: number; x: number; y: number; angle: number }
-    right: { width: number; height: number; x: number; y: number; angle: number }
+    left: {
+      width: number
+      height: number
+      x: number
+      y: number
+      angle: number
+      glyph?: GraffitiEyeId
+    }
+    right: {
+      width: number
+      height: number
+      x: number
+      y: number
+      angle: number
+      glyph?: GraffitiEyeId
+    }
     spacing: number
   }
   perspective: number

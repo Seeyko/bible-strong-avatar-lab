@@ -48,6 +48,10 @@
       "types": "./dist/ambientMotion.d.ts",
       "import": "./dist/ambientMotion.js"
     },
+    "./graffiti": {
+      "types": "./dist/graffiti.d.ts",
+      "import": "./dist/graffiti.js"
+    },
     "./schema": "./dist/avatarDefinition.schema.json"
   },
   "scripts": {

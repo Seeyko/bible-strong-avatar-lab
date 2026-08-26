@@ -126,6 +126,17 @@ pnpm preview
 
 The application is a client-only Vite site with no server runtime or environment variables. The build uses relative asset paths, so the contents of `dist/` can be hosted at a domain root or a subpath, including a GitHub Pages project URL. Any static host that serves `index.html` can deploy it.
 
+### Dokploy
+
+Dokploy watches **`docker-compose.yml` at the repository root**. Without that file, the stack is not deployed.
+
+The compose file builds the Vite app, then serves `dist/` with busybox `httpd` on port 80 (no app runtime, near-zero idle). Traefik labels follow the same pattern as `bookmarks-gallery`: host from `AVATAR_LAB_HOST`, `dokploy-network`, explicit router-to-service link.
+
+```bash
+docker compose build
+docker compose up -d
+```
+
 Vercel Web Analytics and Speed Insights are integrated in the React entry point. Enable both products in the Vercel project dashboard, then redeploy so their collection routes become available.
 
 ## Technical overview

@@ -31,6 +31,7 @@ const mapSurface = <TType extends SurfaceType>(
   ...(surface.morphRoundness === undefined ? {} : { morphRoundness: surface.morphRoundness }),
   ...(surface.tipRoundness === undefined ? {} : { tipRoundness: surface.tipRoundness }),
   ...(surface.baseRoundness === undefined ? {} : { baseRoundness: surface.baseRoundness }),
+  ...(surface.graffitiRing === undefined ? {} : { graffitiRing: surface.graffitiRing }),
 })
 
 const mapExpression = (expression: Expression): AvatarExpressionDefinition => ({
@@ -42,6 +43,7 @@ const mapExpression = (expression: Expression): AvatarExpressionDefinition => ({
       x: expression.positionXLeft,
       y: expression.positionYLeft,
       angle: expression.leftAngle,
+      ...(expression.eyeGlyphLeft ? { glyph: expression.eyeGlyphLeft } : {}),
     },
     right: {
       width: expression.widthRight,
@@ -49,6 +51,7 @@ const mapExpression = (expression: Expression): AvatarExpressionDefinition => ({
       x: expression.positionXRight,
       y: expression.positionYRight,
       angle: expression.rightAngle,
+      ...(expression.eyeGlyphRight ? { glyph: expression.eyeGlyphRight } : {}),
     },
     spacing: expression.spacing,
   },
