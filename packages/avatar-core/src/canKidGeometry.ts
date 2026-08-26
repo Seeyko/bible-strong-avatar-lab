@@ -1,7 +1,7 @@
 export const CAN_KID_ORANGE = '#ee682a'
 export const CAN_KID_INK = '#111316'
 export const CAN_KID_PAPER = '#fffef8'
-export const CAN_KID_METAL = '#c5c8cc'
+export const CAN_KID_METAL = '#6f747b'
 export const CAN_KID_TONGUE = '#b84628'
 export const CAN_KID_SHADOW = '#1a1714'
 
