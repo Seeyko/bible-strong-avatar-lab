@@ -68,6 +68,7 @@ import {
 import { SequenceWorkspace } from '@/features/animation/components/SequenceWorkspace'
 import { groupSequences, resolveSequenceExpression } from '@/features/animation/sequences'
 import { defaultAvatarEyes } from '@/features/avatar/avatars'
+import { GraffitiColorTokens, GraffitiEyeGrid } from '@/features/avatar/components/GraffitiPickers'
 import {
   ExpressionCard,
   ExpressionPreview,
@@ -827,6 +828,12 @@ export function StudioInspector({ controller }: { controller: StudioController }
                           value={activeAvatar.colors.body}
                           onChange={body => updateAvatarColors({ body })}
                         />
+                        {activeAvatar.body.primary.type === 'graffiti' && (
+                          <GraffitiColorTokens
+                            value={activeAvatar.colors.body}
+                            onChange={body => updateAvatarColors({ body })}
+                          />
+                        )}
                       </InspectorCard>
                     </ControlSection>
                     <ControlSection
@@ -853,6 +860,21 @@ export function StudioInspector({ controller }: { controller: StudioController }
                           'Définis l’identité du regard de cet avatar. Les poses s’ajoutent ensuite à cette base.'
                         )}
                       </p>
+                      {activeAvatar.body.primary.type === 'graffiti' && (
+                        <InspectorCard className="graffiti-eye-panel">
+                          <PanelTitle
+                            level={3}
+                            title="Aplats graffiti"
+                            subtitle="Les 16 aplats de droite de la planche Thomas. Un aplat différent change l’expression."
+                          />
+                          <GraffitiEyeGrid
+                            value={activeAvatarEyes.glyphLeft ?? activeAvatarEyes.glyphRight}
+                            onChange={glyph =>
+                              updateAvatarEyes({ glyphLeft: glyph, glyphRight: glyph })
+                            }
+                          />
+                        </InspectorCard>
+                      )}
                       {(['width', 'height', 'size'] as const).map(dimension => (
                         <InspectorCard className="compact" key={`avatar-${dimension}`}>
                           <div className="panel-inline-title">

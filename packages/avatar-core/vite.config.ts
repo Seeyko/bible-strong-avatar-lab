@@ -11,6 +11,7 @@ export default defineConfig({
         body: fileURLToPath(new URL('./src/body.ts', import.meta.url)),
         surfaces: fileURLToPath(new URL('./src/surfaces.ts', import.meta.url)),
         ambientMotion: fileURLToPath(new URL('./src/ambientMotion.ts', import.meta.url)),
+        graffiti: fileURLToPath(new URL('./src/graffiti.ts', import.meta.url)),
       },
       formats: ['es'],
     },

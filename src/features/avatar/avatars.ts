@@ -1,8 +1,10 @@
+import { parseGraffitiEyeId, type GraffitiEyeId } from '@bible-strong/avatar-core'
+
+import { isBodyMotion, isEyeMotion } from './ambientMotion'
 import { parseAvatarBody, type AvatarBody } from './body'
+import type { Expression } from './geometry'
 import { defaultExpression, initialExpressions } from './presets'
 import { surfacePresets } from './surfaces'
-import type { Expression } from './geometry'
-import { isBodyMotion, isEyeMotion } from './ambientMotion'
 import {
   normalizeSequencesForExpressions,
   parseSequences,
@@ -44,7 +46,10 @@ export type AvatarEyeDefaults = Pick<
   | 'positionYRight'
   | 'leftAngle'
   | 'rightAngle'
->
+> & {
+  glyphLeft?: GraffitiEyeId
+  glyphRight?: GraffitiEyeId
+}
 export const defaultAvatarColors: AvatarColors = { body: '#5b7fe5', eyes: '#111316' }
 export const defaultAvatarRenderStyle: AvatarRenderStyle = { type: 'vector' }
 export const defaultPixelRenderStyle: PixelRenderStyle = {
@@ -97,14 +102,30 @@ export const parseAvatarRenderStyle = (value: unknown): AvatarRenderStyle => {
   }
 }
 
-const eyeDefaultFields = Object.keys(defaultAvatarEyes) as (keyof AvatarEyeDefaults)[]
+const eyeDefaultNumericFields = [
+  'widthLeft',
+  'widthRight',
+  'heightLeft',
+  'heightRight',
+  'spacing',
+  'positionXLeft',
+  'positionXRight',
+  'positionYLeft',
+  'positionYRight',
+  'leftAngle',
+  'rightAngle',
+] as const
 export const parseAvatarEyeDefaults = (value: unknown): AvatarEyeDefaults => {
   const candidate = value as Partial<AvatarEyeDefaults> | null
   const parsed = { ...defaultAvatarEyes }
-  eyeDefaultFields.forEach(field => {
+  eyeDefaultNumericFields.forEach(field => {
     const stored = candidate?.[field]
     if (typeof stored === 'number' && Number.isFinite(stored)) parsed[field] = stored
   })
+  const glyphLeft = parseGraffitiEyeId((candidate as { glyphLeft?: unknown } | null)?.glyphLeft)
+  const glyphRight = parseGraffitiEyeId((candidate as { glyphRight?: unknown } | null)?.glyphRight)
+  if (glyphLeft) parsed.glyphLeft = glyphLeft
+  if (glyphRight) parsed.glyphRight = glyphRight
   return parsed
 }
 
@@ -113,13 +134,15 @@ export const applyAvatarEyeDefaults = (
   eyes: AvatarEyeDefaults = defaultAvatarEyes
 ): Expression => {
   const result = { ...expression }
-  eyeDefaultFields.forEach(field => {
+  eyeDefaultNumericFields.forEach(field => {
     result[field] = expression[field] + eyes[field] - defaultAvatarEyes[field]
   })
   result.widthLeft = Math.max(10, result.widthLeft)
   result.widthRight = Math.max(10, result.widthRight)
   result.heightLeft = Math.max(10, result.heightLeft)
   result.heightRight = Math.max(10, result.heightRight)
+  if (!result.eyeGlyphLeft && eyes.glyphLeft) result.eyeGlyphLeft = eyes.glyphLeft
+  if (!result.eyeGlyphRight && eyes.glyphRight) result.eyeGlyphRight = eyes.glyphRight
   return result
 }
 
@@ -167,6 +190,10 @@ export const parseExpressions = (value: unknown): Expression[] => {
     parsed.bodyMotion = isBodyMotion(storedBodyMotion)
       ? storedBodyMotion
       : defaultExpression.bodyMotion
+    const glyphLeft = parseGraffitiEyeId(candidate.eyeGlyphLeft)
+    const glyphRight = parseGraffitiEyeId(candidate.eyeGlyphRight)
+    if (glyphLeft) parsed.eyeGlyphLeft = glyphLeft
+    if (glyphRight) parsed.eyeGlyphRight = glyphRight
     return parsed
   })
 }

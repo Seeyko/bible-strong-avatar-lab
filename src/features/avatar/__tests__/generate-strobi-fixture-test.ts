@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises'
+import { readFile, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 
 import { createAvatarDefinition } from '../avatarDefinition'
@@ -15,9 +15,10 @@ it('keeps the consumer fixture synchronized with the bundled Strobi Studio docum
   })
   const result = createAvatarDefinition({ avatar, behavior })
   if (!result.ok) throw new Error(result.errors.map(error => error.message).join('\n'))
-  const fixture = await readFile(
-    resolve('examples/react-vite-consumer/src/strobi.avatar.json'),
-    'utf8'
-  )
+  const fixturePath = resolve('examples/react-vite-consumer/src/strobi.avatar.json')
+  if (process.env.UPDATE_STROBI) {
+    await writeFile(fixturePath, `${JSON.stringify(result.value, null, 2)}\n`)
+  }
+  const fixture = await readFile(fixturePath, 'utf8')
   expect(JSON.parse(fixture)).toEqual(result.value)
 })

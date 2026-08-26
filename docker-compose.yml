@@ -1,0 +1,33 @@
+# Dokploy watch path: this file (repository root).
+# Recette copiée de bookmarks-gallery : 1 service, build ., expose 80.
+#
+# Set AVATAR_LAB_HOST in Dokploy (URL auto / traefik.me).
+# Prod = busybox httpd sur dist/, pas de Node.
+
+services:
+  avatar-lab:
+    build: .
+    image: bible-strong-avatar-lab:${APP_VERSION:-latest}
+    restart: unless-stopped
+    expose:
+      - '80'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.avatar-lab.rule=Host(`${AVATAR_LAB_HOST}`)'
+      - 'traefik.http.routers.avatar-lab.entrypoints=websecure'
+      - 'traefik.http.routers.avatar-lab.tls.certResolver=letsencrypt'
+      # Dokploy injecte SON propre routeur+service traefik.me sur ce conteneur.
+      # Deux services sur un conteneur = Traefik refuse de lier le routeur tout
+      # seul (« cannot be linked automatically with multiple Services ») et le
+      # jette : 404. Le lien explicite ci-dessous est donc obligatoire.
+      - 'traefik.http.routers.avatar-lab.service=avatar-lab'
+      - 'traefik.http.services.avatar-lab.loadbalancer.server.port=80'
+      - 'traefik.http.middlewares.avatar-lab-ratelimit.ratelimit.average=15'
+      - 'traefik.http.middlewares.avatar-lab-ratelimit.ratelimit.burst=60'
+      - 'traefik.http.routers.avatar-lab.middlewares=avatar-lab-ratelimit'
+    networks:
+      - dokploy-network
+
+networks:
+  dokploy-network:
+    external: true

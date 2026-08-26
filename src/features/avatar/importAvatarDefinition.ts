@@ -119,6 +119,8 @@ const toExpression = (
   bodyMotion: expression.motion.body,
   ...(expression.colors?.body ? { bodyColor: expression.colors.body } : {}),
   ...(expression.colors?.eyes ? { eyeColor: expression.colors.eyes } : {}),
+  ...(expression.eyes.left.glyph ? { eyeGlyphLeft: expression.eyes.left.glyph } : {}),
+  ...(expression.eyes.right.glyph ? { eyeGlyphRight: expression.eyes.right.glyph } : {}),
 })
 
 const toSequence = (
@@ -251,6 +253,8 @@ export const studioAvatarFromDefinition = (value: unknown): ImportedAvatarDefini
       positionYRight: neutral.eyes.right.y,
       leftAngle: neutral.eyes.left.angle,
       rightAngle: neutral.eyes.right.angle,
+      ...(neutral.eyes.left.glyph ? { glyphLeft: neutral.eyes.left.glyph } : {}),
+      ...(neutral.eyes.right.glyph ? { glyphRight: neutral.eyes.right.glyph } : {}),
     },
     renderStyle: { type: 'vector' },
     behavior: { expressions, sequences },

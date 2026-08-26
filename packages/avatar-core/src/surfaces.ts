@@ -1,7 +1,9 @@
 import type { Point3 } from './geometry'
 
+import { DEFAULT_GRAFFITI_RING, type GraffitiRingId } from './graffiti'
+
 export type SurfaceType =
-  'sphere' | 'mickey' | 'cursor' | 'cube' | 'capsule' | 'cylinder' | 'cone' | 'diamond'
+  'sphere' | 'mickey' | 'cursor' | 'cube' | 'capsule' | 'cylinder' | 'cone' | 'diamond' | 'graffiti'
 
 export type SurfaceConfig = {
   type: SurfaceType
@@ -12,6 +14,7 @@ export type SurfaceConfig = {
   morphRoundness?: number
   tipRoundness?: number
   baseRoundness?: number
+  graffitiRing?: GraffitiRingId
 }
 
 export type SurfaceSample = {
@@ -44,6 +47,14 @@ export const surfacePresets: Record<SurfaceType, SurfaceConfig> = {
     baseRoundness: 0.45,
   },
   diamond: { type: 'diamond', width: 235, height: 260, depth: 215, roundness: 0 },
+  graffiti: {
+    type: 'graffiti',
+    width: 240,
+    height: 240,
+    depth: 240,
+    roundness: 1,
+    graffitiRing: DEFAULT_GRAFFITI_RING,
+  },
 }
 
 export const surfaceLabels: Record<SurfaceType, string> = {
@@ -55,6 +66,7 @@ export const surfaceLabels: Record<SurfaceType, string> = {
   cylinder: 'Cylindre',
   cone: 'Cône',
   diamond: 'Diamant',
+  graffiti: 'Anneau graffiti',
 }
 
 const signedPower = (value: number, exponent: number) =>
@@ -305,6 +317,7 @@ export const surfacePointAt = (
   switch (config.type) {
     case 'sphere':
     case 'mickey':
+    case 'graffiti':
       return superellipsoid(longitude, latitude, width, height, depth, 1, 1)
     case 'cube':
       return cube(config, longitude, latitude)
@@ -529,6 +542,7 @@ export const surfaceFrontSampleAt = (
   switch (config.type) {
     case 'sphere':
     case 'mickey':
+    case 'graffiti':
       return ellipsoidFrontSample(x, y, radiusX, radiusY, radiusZ)
 
     case 'cube':
@@ -582,7 +596,7 @@ export const surfaceNormalAt = (
 
   // An ellipsoid has a cheap exact normal. This is also the overwhelmingly
   // common path for the default spherical head.
-  if (config.type === 'sphere' || config.type === 'mickey') {
+  if (config.type === 'sphere' || config.type === 'mickey' || config.type === 'graffiti') {
     const halfWidth = config.width / 2 || 1
     const halfHeight = config.height / 2 || 1
     const halfDepth = config.depth / 2 || 1
@@ -619,7 +633,7 @@ export const surfaceSampleAt = (
 ): SurfaceSample => {
   const point = surfacePointAt(config, longitude, latitude)
 
-  if (config.type === 'sphere' || config.type === 'mickey') {
+  if (config.type === 'sphere' || config.type === 'mickey' || config.type === 'graffiti') {
     const halfWidth = config.width / 2 || 1
     const halfHeight = config.height / 2 || 1
     const halfDepth = config.depth / 2 || 1

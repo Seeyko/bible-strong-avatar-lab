@@ -1,3 +1,4 @@
+import { parseGraffitiRingId } from './graffiti'
 import { surfaceLabels, surfacePresets, type SurfaceConfig, type SurfaceType } from './surfaces'
 
 export type BodyVector = readonly [number, number, number]
@@ -46,7 +47,14 @@ export const parseSurfaceConfig = (value: unknown, fallback: SurfaceConfig): Sur
     return { ...fallback }
   if (candidate.baseRoundness !== undefined && !finite(candidate.baseRoundness))
     return { ...fallback }
-  return { ...preset, ...candidate, type }
+  return {
+    ...preset,
+    ...candidate,
+    type,
+    ...(type === 'graffiti'
+      ? { graffitiRing: parseGraffitiRingId(candidate.graffitiRing ?? preset.graffitiRing) }
+      : { graffitiRing: undefined }),
+  }
 }
 
 export const parseAvatarBody = (value: unknown, fallbackPrimary: SurfaceConfig): AvatarBody => {

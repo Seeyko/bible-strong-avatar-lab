@@ -4,16 +4,17 @@
   "name": "Strobi",
   "body": {
     "primary": {
-      "type": "sphere",
+      "type": "graffiti",
       "width": 240,
       "height": 240,
-      "depth": 240.03671875,
-      "roundness": 1
+      "depth": 240,
+      "roundness": 1,
+      "graffitiRing": "uniform"
     },
     "nodes": []
   },
   "colors": {
-    "body": "#5b7fe5",
+    "body": "#289bd2",
     "eyes": "#111316"
   },
   "expressions": {
@@ -25,20 +26,22 @@
       },
       "eyes": {
         "left": {
-          "width": 20,
-          "height": 50,
+          "width": 26,
+          "height": 32,
           "x": 0,
-          "y": -7,
-          "angle": 0
+          "y": -10,
+          "angle": 0,
+          "glyph": "blob-07"
         },
         "right": {
-          "width": 20,
-          "height": 50,
+          "width": 26,
+          "height": 32,
           "x": 0,
-          "y": -7,
-          "angle": 0
+          "y": -10,
+          "angle": 0,
+          "glyph": "blob-06"
         },
-        "spacing": 35
+        "spacing": 46
       },
       "perspective": 1,
       "motion": {
@@ -54,20 +57,22 @@
       },
       "eyes": {
         "left": {
-          "width": 22.501171874999997,
-          "height": 42.37773437499999,
+          "width": 28.501171874999997,
+          "height": 24.37773437499999,
           "x": 0,
-          "y": -20.5,
-          "angle": 0
+          "y": -23.5,
+          "angle": 0,
+          "glyph": "blob-07"
         },
         "right": {
-          "width": 22.501171874999997,
-          "height": 42.37773437499999,
+          "width": 28.501171874999997,
+          "height": 24.37773437499999,
           "x": 0,
-          "y": -20.5,
-          "angle": 0
+          "y": -23.5,
+          "angle": 0,
+          "glyph": "blob-06"
         },
-        "spacing": 54.3
+        "spacing": 65.3
       },
       "perspective": 1,
       "motion": {
@@ -83,20 +88,22 @@
       },
       "eyes": {
         "left": {
-          "width": 22.401171875000003,
-          "height": 54.5703125,
+          "width": 28.401171875000003,
+          "height": 36.5703125,
           "x": 0,
-          "y": 0,
-          "angle": 0
+          "y": -3,
+          "angle": 0,
+          "glyph": "blob-07"
         },
         "right": {
-          "width": 22.401171875000003,
-          "height": 54.5703125,
+          "width": 28.401171875000003,
+          "height": 36.5703125,
           "x": 0,
-          "y": 0,
-          "angle": 0
+          "y": -3,
+          "angle": 0,
+          "glyph": "blob-06"
         },
-        "spacing": 57.7
+        "spacing": 68.7
       },
       "perspective": 1,
       "motion": {
@@ -112,20 +119,22 @@
       },
       "eyes": {
         "left": {
-          "width": 23.090625000000003,
-          "height": 57.6796875,
+          "width": 29.090625000000003,
+          "height": 39.6796875,
           "x": 0,
-          "y": 0,
-          "angle": 0
+          "y": -3,
+          "angle": 0,
+          "glyph": "blob-07"
         },
         "right": {
-          "width": 49.924609375,
-          "height": 12.431640625,
+          "width": 55.924609375,
+          "height": 10,
           "x": 0,
-          "y": 0,
-          "angle": 0
+          "y": -3,
+          "angle": 0,
+          "glyph": "blob-06"
         },
-        "spacing": 56.3
+        "spacing": 67.3
       },
       "perspective": 1,
       "motion": {
@@ -141,20 +150,22 @@
       },
       "eyes": {
         "left": {
-          "width": 22.066796874999994,
-          "height": 39.599218750000006,
+          "width": 28.066796874999994,
+          "height": 21.599218750000006,
           "x": 0,
-          "y": 0,
-          "angle": 0
+          "y": -3,
+          "angle": 0,
+          "glyph": "blob-07"
         },
         "right": {
-          "width": 22.066796874999994,
-          "height": 39.599218750000006,
+          "width": 28.066796874999994,
+          "height": 21.599218750000006,
           "x": 0,
-          "y": 0,
-          "angle": 0
+          "y": -3,
+          "angle": 0,
+          "glyph": "blob-06"
         },
-        "spacing": 50.900000000000006
+        "spacing": 61.900000000000006
       },
       "perspective": 1,
       "motion": {
@@ -170,20 +181,22 @@
       },
       "eyes": {
         "left": {
-          "width": 52.084765625,
-          "height": 51.46715970849806,
+          "width": 58.084765625,
+          "height": 33.46715970849806,
           "x": 0,
-          "y": 0,
-          "angle": 0
+          "y": -3,
+          "angle": 0,
+          "glyph": "blob-07"
         },
         "right": {
-          "width": 53.11410881916996,
-          "height": 52.18769994441695,
+          "width": 59.11410881916996,
+          "height": 34.18769994441695,
           "x": 0,
-          "y": 0,
-          "angle": 0
+          "y": -3,
+          "angle": 0,
+          "glyph": "blob-06"
         },
-        "spacing": 69.5
+        "spacing": 80.5
       },
       "perspective": 1,
       "motion": {
@@ -199,20 +212,22 @@
       },
       "eyes": {
         "left": {
-          "width": 51.68336723153048,
-          "height": 51.74054108796297,
+          "width": 57.68336723153048,
+          "height": 33.74054108796297,
           "x": 0,
-          "y": 0,
-          "angle": 0
+          "y": -3,
+          "angle": 0,
+          "glyph": "blob-07"
         },
         "right": {
-          "width": 51.68336723153048,
-          "height": 51.74054108796297,
+          "width": 57.68336723153048,
+          "height": 33.74054108796297,
           "x": 0,
-          "y": 0,
-          "angle": 0
+          "y": -3,
+          "angle": 0,
+          "glyph": "blob-06"
         },
-        "spacing": 70.9
+        "spacing": 81.9
       },
       "perspective": 1,
       "motion": {
@@ -228,20 +243,22 @@
       },
       "eyes": {
         "left": {
-          "width": 51.775000000000006,
-          "height": 13.02734375,
+          "width": 57.775000000000006,
+          "height": 10,
           "x": 0,
-          "y": 0,
-          "angle": 0
+          "y": -3,
+          "angle": 0,
+          "glyph": "blob-07"
         },
         "right": {
-          "width": 51.775000000000006,
-          "height": 13.02734375,
+          "width": 57.775000000000006,
+          "height": 10,
           "x": 0,
-          "y": 0,
-          "angle": 0
+          "y": -3,
+          "angle": 0,
+          "glyph": "blob-06"
         },
-        "spacing": 63.872265625
+        "spacing": 74.872265625
       },
       "perspective": 1,
       "motion": {
@@ -257,20 +274,22 @@
       },
       "eyes": {
         "left": {
-          "width": 20.908203125,
-          "height": 40.400781249999994,
+          "width": 26.908203125,
+          "height": 22.400781249999994,
           "x": 0,
-          "y": 0,
-          "angle": -30.865625
+          "y": -3,
+          "angle": -30.865625,
+          "glyph": "blob-07"
         },
         "right": {
-          "width": 20.908203125,
-          "height": 40.400781249999994,
+          "width": 26.908203125,
+          "height": 22.400781249999994,
           "x": 0,
-          "y": 0,
-          "angle": 28.781640625
+          "y": -3,
+          "angle": 28.781640625,
+          "glyph": "blob-06"
         },
-        "spacing": 52.059765625
+        "spacing": 63.059765625
       },
       "perspective": 1,
       "motion": {
@@ -286,20 +305,22 @@
       },
       "eyes": {
         "left": {
-          "width": 20.605859374999994,
-          "height": 47.769921874999994,
+          "width": 26.605859374999994,
+          "height": 29.769921874999994,
           "x": 0,
-          "y": 0,
-          "angle": 23.523046875000002
+          "y": -3,
+          "angle": 23.523046875000002,
+          "glyph": "blob-07"
         },
         "right": {
-          "width": 20.605859374999994,
-          "height": 47.769921874999994,
+          "width": 26.605859374999994,
+          "height": 29.769921874999994,
           "x": 0,
-          "y": 0,
-          "angle": -24.042578125000002
+          "y": -3,
+          "angle": -24.042578125000002,
+          "glyph": "blob-06"
         },
-        "spacing": 54.900000000000006
+        "spacing": 65.9
       },
       "perspective": 1,
       "motion": {
@@ -315,20 +336,22 @@
       },
       "eyes": {
         "left": {
-          "width": 42.5,
-          "height": 41.8,
+          "width": 48.5,
+          "height": 23.799999999999997,
           "x": 0,
-          "y": 0,
-          "angle": 0
+          "y": -3,
+          "angle": 0,
+          "glyph": "blob-07"
         },
         "right": {
-          "width": 22.1,
-          "height": 22.200000000000003,
+          "width": 28.1,
+          "height": 10,
           "x": 0,
-          "y": 0,
-          "angle": 0
+          "y": -3,
+          "angle": 0,
+          "glyph": "blob-06"
         },
-        "spacing": 61.7
+        "spacing": 72.7
       },
       "perspective": 1,
       "motion": {
@@ -344,20 +367,22 @@
       },
       "eyes": {
         "left": {
-          "width": 23.836718749999996,
-          "height": 58.130078125,
+          "width": 29.836718749999996,
+          "height": 40.130078125,
           "x": 0,
-          "y": 0,
-          "angle": 0
+          "y": -3,
+          "angle": 0,
+          "glyph": "blob-07"
         },
         "right": {
-          "width": 23.836718749999996,
-          "height": 58.130078125,
+          "width": 29.836718749999996,
+          "height": 40.130078125,
           "x": 0,
-          "y": 0,
-          "angle": 0
+          "y": -3,
+          "angle": 0,
+          "glyph": "blob-06"
         },
-        "spacing": 56.8
+        "spacing": 67.8
       },
       "perspective": 1,
       "motion": {
@@ -373,20 +398,22 @@
       },
       "eyes": {
         "left": {
-          "width": 34.20086765973213,
-          "height": 85.33085937499999,
+          "width": 40.20086765973213,
+          "height": 67.330859375,
           "x": 0,
-          "y": 0,
-          "angle": 0
+          "y": -3,
+          "angle": 0,
+          "glyph": "blob-07"
         },
         "right": {
-          "width": 34.20086765973213,
-          "height": 83.17775668160692,
+          "width": 40.20086765973213,
+          "height": 65.17775668160692,
           "x": 0,
-          "y": 0,
-          "angle": 0
+          "y": -3,
+          "angle": 0,
+          "glyph": "blob-06"
         },
-        "spacing": 59.414453124999994
+        "spacing": 70.414453125
       },
       "perspective": 1,
       "motion": {
@@ -402,20 +429,22 @@
       },
       "eyes": {
         "left": {
-          "width": 56.133984375,
-          "height": 15.5,
+          "width": 62.133984375,
+          "height": 10,
           "x": 0,
-          "y": 0,
-          "angle": 0
+          "y": -3,
+          "angle": 0,
+          "glyph": "blob-07"
         },
         "right": {
-          "width": 56.133984375,
-          "height": 15.155468749999997,
+          "width": 62.133984375,
+          "height": 10,
           "x": 0,
-          "y": 0,
-          "angle": 0
+          "y": -3,
+          "angle": 0,
+          "glyph": "blob-06"
         },
-        "spacing": 69.276171875
+        "spacing": 80.276171875
       },
       "perspective": 1,
       "motion": {
@@ -431,20 +460,22 @@
       },
       "eyes": {
         "left": {
-          "width": 31.25390625,
-          "height": 76.720703125,
+          "width": 37.25390625,
+          "height": 58.720703125,
           "x": 0,
-          "y": 0,
-          "angle": 0
+          "y": -3,
+          "angle": 0,
+          "glyph": "blob-07"
         },
         "right": {
-          "width": 31.25390625,
-          "height": 76.720703125,
+          "width": 37.25390625,
+          "height": 58.720703125,
           "x": 0,
-          "y": 0,
-          "angle": 0
+          "y": -3,
+          "angle": 0,
+          "glyph": "blob-06"
         },
-        "spacing": 68.7
+        "spacing": 79.7
       },
       "perspective": 1,
       "motion": {
@@ -460,20 +491,22 @@
       },
       "eyes": {
         "left": {
-          "width": 24.306250000000006,
-          "height": 59.281640624999994,
+          "width": 30.306250000000006,
+          "height": 41.281640624999994,
           "x": 0,
-          "y": 0,
-          "angle": 0
+          "y": -3,
+          "angle": 0,
+          "glyph": "blob-07"
         },
         "right": {
-          "width": 48.92421875000001,
-          "height": 13.408203125,
+          "width": 54.92421875000001,
+          "height": 10,
           "x": 0,
-          "y": 0,
-          "angle": 0
+          "y": -3,
+          "angle": 0,
+          "glyph": "blob-06"
         },
-        "spacing": 62.218359375000006
+        "spacing": 73.218359375
       },
       "perspective": 1,
       "motion": {
@@ -489,20 +522,22 @@
       },
       "eyes": {
         "left": {
-          "width": 22.4609375,
-          "height": 39.820703124999994,
+          "width": 28.4609375,
+          "height": 21.820703124999994,
           "x": 0,
-          "y": 0,
-          "angle": 0
+          "y": -3,
+          "angle": 0,
+          "glyph": "blob-07"
         },
         "right": {
-          "width": 22.4609375,
-          "height": 39.820703124999994,
+          "width": 28.4609375,
+          "height": 21.820703124999994,
           "x": 0,
-          "y": 0,
-          "angle": 0
+          "y": -3,
+          "angle": 0,
+          "glyph": "blob-06"
         },
-        "spacing": 53.900000000000006
+        "spacing": 64.9
       },
       "perspective": 1,
       "motion": {
@@ -518,20 +553,22 @@
       },
       "eyes": {
         "left": {
-          "width": 19.602343750000003,
-          "height": 48.63984375,
+          "width": 25.602343750000003,
+          "height": 30.639843749999997,
           "x": 0,
-          "y": 0,
-          "angle": -27.606640625
+          "y": -3,
+          "angle": -27.606640625,
+          "glyph": "blob-07"
         },
         "right": {
-          "width": 19.602343750000003,
-          "height": 48.63984375,
+          "width": 25.602343750000003,
+          "height": 30.639843749999997,
           "x": 0,
-          "y": 0,
-          "angle": 26.1484375
+          "y": -3,
+          "angle": 26.1484375,
+          "glyph": "blob-06"
         },
-        "spacing": 55.099999999999994
+        "spacing": 66.1
       },
       "perspective": 1,
       "motion": {
@@ -547,20 +584,22 @@
       },
       "eyes": {
         "left": {
-          "width": 19.045145681988203,
-          "height": 43.370703125000006,
+          "width": 25.045145681988203,
+          "height": 25.370703125000006,
           "x": 0,
-          "y": 0,
-          "angle": 26.2921875
+          "y": -3,
+          "angle": 26.2921875,
+          "glyph": "blob-07"
         },
         "right": {
-          "width": 19.045145681988203,
-          "height": 43.370703125000006,
+          "width": 25.045145681988203,
+          "height": 25.370703125000006,
           "x": 0,
-          "y": 0,
-          "angle": -20.249218750000004
+          "y": -3,
+          "angle": -20.249218750000004,
+          "glyph": "blob-06"
         },
-        "spacing": 51.73124999999999
+        "spacing": 62.73124999999999
       },
       "perspective": 1,
       "motion": {
@@ -576,20 +615,22 @@
       },
       "eyes": {
         "left": {
-          "width": 42.1,
-          "height": 41.7,
+          "width": 48.099999999999994,
+          "height": 23.700000000000003,
           "x": 0,
-          "y": 0,
-          "angle": 0
+          "y": -3,
+          "angle": 0,
+          "glyph": "blob-07"
         },
         "right": {
-          "width": 22.200000000000003,
-          "height": 22.099999999999994,
+          "width": 28.200000000000003,
+          "height": 10,
           "x": 0,
-          "y": 0,
-          "angle": 0
+          "y": -3,
+          "angle": 0,
+          "glyph": "blob-06"
         },
-        "spacing": 60.400000000000006
+        "spacing": 71.4
       },
       "perspective": 1,
       "motion": {
@@ -605,20 +646,22 @@
       },
       "eyes": {
         "left": {
-          "width": 23.045703125000003,
-          "height": 58.685156250000006,
+          "width": 29.045703125000003,
+          "height": 40.685156250000006,
           "x": 0,
-          "y": 0,
-          "angle": 0
+          "y": -3,
+          "angle": 0,
+          "glyph": "blob-07"
         },
         "right": {
-          "width": 23.045703125000003,
-          "height": 58.685156250000006,
+          "width": 29.045703125000003,
+          "height": 40.685156250000006,
           "x": 0,
-          "y": 0,
-          "angle": 0
+          "y": -3,
+          "angle": 0,
+          "glyph": "blob-06"
         },
-        "spacing": 56.2
+        "spacing": 67.2
       },
       "perspective": 1,
       "motion": {
@@ -634,20 +677,22 @@
       },
       "eyes": {
         "left": {
-          "width": 35.452734375,
-          "height": 79.10429687499999,
+          "width": 41.452734375,
+          "height": 61.104296875,
           "x": 0,
-          "y": 0,
-          "angle": 0
+          "y": -3,
+          "angle": 0,
+          "glyph": "blob-07"
         },
         "right": {
-          "width": 35.452734375,
-          "height": 79.10429687499999,
+          "width": 41.452734375,
+          "height": 61.104296875,
           "x": 0,
-          "y": 0,
-          "angle": 0
+          "y": -3,
+          "angle": 0,
+          "glyph": "blob-06"
         },
-        "spacing": 70.8
+        "spacing": 81.8
       },
       "perspective": 1,
       "motion": {
@@ -663,20 +708,22 @@
       },
       "eyes": {
         "left": {
-          "width": 51.400000000000006,
-          "height": 50.099999999999994,
+          "width": 57.400000000000006,
+          "height": 32.099999999999994,
           "x": 0,
-          "y": 0,
-          "angle": 0
+          "y": -3,
+          "angle": 0,
+          "glyph": "blob-07"
         },
         "right": {
-          "width": 50.5,
-          "height": 49.400000000000006,
+          "width": 56.5,
+          "height": 31.400000000000006,
           "x": 0,
-          "y": 0,
-          "angle": 0
+          "y": -3,
+          "angle": 0,
+          "glyph": "blob-06"
         },
-        "spacing": 69
+        "spacing": 80
       },
       "perspective": 1,
       "motion": {
@@ -692,20 +739,22 @@
       },
       "eyes": {
         "left": {
-          "width": 55.672265624999994,
-          "height": 14.616015625000003,
+          "width": 61.672265624999994,
+          "height": 10,
           "x": 0,
-          "y": 0,
-          "angle": 0
+          "y": -3,
+          "angle": 0,
+          "glyph": "blob-07"
         },
         "right": {
-          "width": 55.672265624999994,
-          "height": 14.616015625000003,
+          "width": 61.672265624999994,
+          "height": 10,
           "x": 0,
-          "y": 0,
-          "angle": 0
+          "y": -3,
+          "angle": 0,
+          "glyph": "blob-06"
         },
-        "spacing": 68.416796875
+        "spacing": 79.416796875
       },
       "perspective": 1,
       "motion": {
@@ -721,20 +770,22 @@
       },
       "eyes": {
         "left": {
-          "width": 23.969921874999997,
-          "height": 55.892968749999994,
+          "width": 29.969921874999997,
+          "height": 37.892968749999994,
           "x": 0,
-          "y": -9.8,
-          "angle": 0
+          "y": -12.8,
+          "angle": 0,
+          "glyph": "blob-07"
         },
         "right": {
-          "width": 53.56328125,
-          "height": 13.333593750000006,
+          "width": 59.56328125,
+          "height": 10,
           "x": 0,
-          "y": -9.8,
-          "angle": 0
+          "y": -12.8,
+          "angle": 0,
+          "glyph": "blob-06"
         },
-        "spacing": 59.943749999999994
+        "spacing": 70.94375
       },
       "perspective": 1,
       "motion": {
@@ -750,20 +801,22 @@
       },
       "eyes": {
         "left": {
-          "width": 21.5,
-          "height": 32,
+          "width": 27.5,
+          "height": 14,
           "x": 0,
-          "y": 40,
-          "angle": 0
+          "y": 37,
+          "angle": 0,
+          "glyph": "blob-07"
         },
         "right": {
-          "width": 23.200000000000003,
-          "height": 33.5,
+          "width": 29.200000000000003,
+          "height": 15.5,
           "x": 0,
-          "y": 40,
-          "angle": 0
+          "y": 37,
+          "angle": 0,
+          "glyph": "blob-06"
         },
-        "spacing": 51.2
+        "spacing": 62.2
       },
       "perspective": 1,
       "motion": {
@@ -779,20 +832,22 @@
       },
       "eyes": {
         "left": {
-          "width": 27.12656249999999,
-          "height": 63.028125,
+          "width": 33.12656249999999,
+          "height": 45.028125,
           "x": 0,
-          "y": 0,
-          "angle": -36.244531249999994
+          "y": -3,
+          "angle": -36.244531249999994,
+          "glyph": "blob-07"
         },
         "right": {
-          "width": 27.12656249999999,
-          "height": 63.028125,
+          "width": 33.12656249999999,
+          "height": 45.028125,
           "x": 0,
-          "y": 0,
-          "angle": 27.730078125000002
+          "y": -3,
+          "angle": 27.730078125000002,
+          "glyph": "blob-06"
         },
-        "spacing": 68.7
+        "spacing": 79.7
       },
       "perspective": 1,
       "motion": {
@@ -812,20 +867,22 @@
       },
       "eyes": {
         "left": {
-          "width": 20.605859374999994,
-          "height": 47.769921874999994,
+          "width": 26.605859374999994,
+          "height": 29.769921874999994,
           "x": 0,
-          "y": 0,
-          "angle": 23.523046875000002
+          "y": -3,
+          "angle": 23.523046875000002,
+          "glyph": "blob-07"
         },
         "right": {
-          "width": 20.605859374999994,
-          "height": 47.769921874999994,
+          "width": 26.605859374999994,
+          "height": 29.769921874999994,
           "x": 0,
-          "y": 0,
-          "angle": -24.042578125000002
+          "y": -3,
+          "angle": -24.042578125000002,
+          "glyph": "blob-06"
         },
-        "spacing": 54.900000000000006
+        "spacing": 65.9
       },
       "perspective": 1,
       "motion": {

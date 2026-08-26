@@ -8,30 +8,33 @@
         "name": "Strobi",
         "body": {
           "primary": {
-            "type": "sphere",
+            "type": "graffiti",
             "width": 240,
             "height": 240,
-            "depth": 240.03671875,
-            "roundness": 1
+            "depth": 240,
+            "roundness": 1,
+            "graffitiRing": "uniform"
           },
           "nodes": []
         },
         "colors": {
-          "body": "#5b7fe5",
+          "body": "#289bd2",
           "eyes": "#111316"
         },
         "eyes": {
-          "widthLeft": 20,
-          "widthRight": 20,
-          "heightLeft": 50,
-          "heightRight": 50,
-          "spacing": 35,
+          "widthLeft": 26,
+          "widthRight": 26,
+          "heightLeft": 32,
+          "heightRight": 32,
+          "spacing": 46,
           "positionXLeft": 0,
           "positionXRight": 0,
-          "positionYLeft": -7,
-          "positionYRight": -7,
+          "positionYLeft": -10,
+          "positionYRight": -10,
           "leftAngle": 0,
-          "rightAngle": 0
+          "rightAngle": 0,
+          "glyphLeft": "blob-07",
+          "glyphRight": "blob-06"
         }
       },
       {
