@@ -39,7 +39,7 @@ describe('Studio document', () => {
     expect(document.sequences).toHaveLength(23)
     expect(document.expressions.every(expression => expression.semanticKey)).toBe(true)
     expect(document.sequences.every(sequence => sequence.semanticKey)).toBe(true)
-    expect(document.playback).toEqual({ stateId: 'proud', playing: true })
+    expect(document.playback).toEqual({ stateId: 'idle', playing: false })
   })
 
   it('clears only the persisted Studio project', () => {

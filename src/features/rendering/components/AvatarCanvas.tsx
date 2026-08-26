@@ -820,7 +820,7 @@ export function AvatarCanvas({
               />
               <feColorMatrix type="saturate" values="0" in="grain" result="mono" />
               <feComponentTransfer in="mono" result="soft">
-                <feFuncA type="table" tableValues="0 0.14" />
+                <feFuncA type="table" tableValues="0 0.07" />
               </feComponentTransfer>
               <feBlend in="SourceGraphic" in2="soft" mode="multiply" />
             </filter>

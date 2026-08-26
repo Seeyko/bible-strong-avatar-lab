@@ -2191,7 +2191,7 @@
     }
   ],
   "playback": {
-    "stateId": "proud",
-    "playing": true
+    "stateId": "idle",
+    "playing": false
   }
 }
