@@ -52,6 +52,10 @@
       "types": "./dist/graffiti.d.ts",
       "import": "./dist/graffiti.js"
     },
+    "./rubber-hose": {
+      "types": "./dist/rubberHose.d.ts",
+      "import": "./dist/rubberHose.js"
+    },
     "./schema": "./dist/avatarDefinition.schema.json"
   },
   "scripts": {

@@ -43,9 +43,10 @@ export type SurfaceDefinition<TType extends SurfaceType = SurfaceType> = {
   tipRoundness?: number
   baseRoundness?: number
   graffitiRing?: GraffitiRingId
+  canSpray?: boolean
 }
 
-export type BodyNodeSurfaceType = Exclude<SurfaceType, 'mickey' | 'cursor' | 'graffiti'>
+export type BodyNodeSurfaceType = Exclude<SurfaceType, 'mickey' | 'cursor' | 'graffiti' | 'can'>
 export type PrimarySurfaceDefinition = SurfaceDefinition<SurfaceType>
 export type BodyNodeSurfaceDefinition = SurfaceDefinition<BodyNodeSurfaceType>
 

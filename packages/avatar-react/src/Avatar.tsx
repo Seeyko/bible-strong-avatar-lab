@@ -2,6 +2,9 @@ import {
   advanceAvatarPlayback,
   createAvatarPlaybackState,
   MAX_BODY_NODES,
+  MAX_OVERLAY_PATHS,
+  overlayPaint,
+  tintCanonicalCanMarkup,
   playAvatarAnimation,
   pauseAvatarPlayback,
   renderAvatarDefinition,
@@ -34,6 +37,7 @@ import './styles.css'
 const validatedDefinitions = new WeakSet<object>()
 const controlledExpressionTransitionMs = 420
 const bodyPathSlots = MAX_BODY_NODES + 2
+const overlayPathSlots = MAX_OVERLAY_PATHS
 
 const runtimeEnvironment = () => ({
   random: Math.random,
@@ -200,6 +204,9 @@ export function Avatar({
   const rightPathRef = useRef<SVGPathElement>(null)
   const backPathRefs = useRef<(SVGPathElement | null)[]>([])
   const frontPathRefs = useRef<(SVGPathElement | null)[]>([])
+  const backOverlayRefs = useRef<(SVGPathElement | null)[]>([])
+  const frontOverlayRefs = useRef<(SVGPathElement | null)[]>([])
+  const canonicalCanRef = useRef<SVGGElement>(null)
   const defaultPlaybackStarted = useRef(false)
   const completedAnimation = useRef<AnimationKey | undefined>(undefined)
   const playbackRef = useRef<CorePlaybackState | null>(null)
@@ -227,6 +234,52 @@ export function Avatar({
       element?.setAttribute('d', frameScene.geometry.frontPaths[index] ?? '')
       element?.setAttribute('fill', frameScene.colors.body)
     })
+    const lock = frameScene.geometry.canonicalCan
+    if (canonicalCanRef.current) {
+      if (lock) {
+        canonicalCanRef.current.setAttribute('transform', lock.transform)
+        canonicalCanRef.current.innerHTML = tintCanonicalCanMarkup(lock.innerMarkup, {
+          body: frameScene.colors.body,
+        })
+      } else {
+        canonicalCanRef.current.removeAttribute('transform')
+        canonicalCanRef.current.innerHTML = ''
+      }
+    }
+    const can = frameScene.geometry.overlays.length > 0
+    headPathRef.current?.setAttribute('display', lock ? 'none' : '')
+    leftPathRef.current?.setAttribute('display', lock ? 'none' : '')
+    rightPathRef.current?.setAttribute('display', lock ? 'none' : '')
+    headPathRef.current?.setAttribute('stroke', can ? '#111316' : 'none')
+    headPathRef.current?.setAttribute('stroke-width', can ? '5' : '0')
+    headPathRef.current?.setAttribute('stroke-linejoin', 'round')
+    leftPathRef.current?.setAttribute('fill', can ? '#fffef8' : frameScene.colors.eyes)
+    rightPathRef.current?.setAttribute('fill', can ? '#fffef8' : frameScene.colors.eyes)
+    leftPathRef.current?.setAttribute('stroke', can ? '#111316' : 'none')
+    rightPathRef.current?.setAttribute('stroke', can ? '#111316' : 'none')
+    leftPathRef.current?.setAttribute('stroke-width', can ? '5' : '0')
+    rightPathRef.current?.setAttribute('stroke-width', can ? '5' : '0')
+    const paintOverlaySlot = (elements: (SVGPathElement | null)[], placement: 'back' | 'front') => {
+      const layers = frameScene.geometry.overlays.filter(overlay => overlay.placement === placement)
+      elements.forEach((element, index) => {
+        const overlay = layers[index]
+        if (!element) return
+        if (!overlay) {
+          element.setAttribute('d', '')
+          return
+        }
+        const paint = overlayPaint(overlay, frameScene.colors)
+        element.setAttribute('d', paint.d)
+        element.setAttribute('fill', paint.fill)
+        element.setAttribute('stroke', paint.stroke)
+        element.setAttribute('stroke-width', String(paint.strokeWidth))
+        element.setAttribute('stroke-linejoin', 'round')
+        element.setAttribute('stroke-linecap', 'round')
+        element.setAttribute('fill-rule', paint.fillRule)
+      })
+    }
+    paintOverlaySlot(backOverlayRefs.current, 'back')
+    paintOverlaySlot(frontOverlayRefs.current, 'front')
   }
 
   const renderPlaybackFrame = (
@@ -487,6 +540,15 @@ export function Avatar({
             <path ref={clipPathRef} d={scene.geometry.headPath} />
           </clipPath>
         </defs>
+        {Array.from({ length: overlayPathSlots }, (_, index) => (
+          <path
+            ref={element => {
+              backOverlayRefs.current[index] = element
+            }}
+            d=""
+            key={`overlay-back-${index}`}
+          />
+        ))}
         {Array.from({ length: bodyPathSlots }, (_, index) => (
           <path
             ref={element => {
@@ -497,8 +559,12 @@ export function Avatar({
             key={`back-${index}`}
           />
         ))}
+        <g ref={canonicalCanRef} className="bs-avatar__can-lock" />
         <path ref={headPathRef} d={scene.geometry.headPath} fill={scene.colors.body} />
-        <g clipPath={`url(#${clipId})`} fill={scene.colors.eyes}>
+        <g
+          clipPath={scene.geometry.overlays.length ? undefined : `url(#${clipId})`}
+          fill={scene.colors.eyes}
+        >
           <path
             ref={leftPathRef}
             d={scene.geometry.leftPath}
@@ -518,6 +584,15 @@ export function Avatar({
             d={scene.geometry.frontPaths[index] ?? ''}
             fill={scene.colors.body}
             key={`front-${index}`}
+          />
+        ))}
+        {Array.from({ length: overlayPathSlots }, (_, index) => (
+          <path
+            ref={element => {
+              frontOverlayRefs.current[index] = element
+            }}
+            d=""
+            key={`overlay-front-${index}`}
           />
         ))}
       </svg>

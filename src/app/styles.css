@@ -1183,6 +1183,57 @@ input {
 .preview-eye {
   fill: var(--avatar-eye-color, #111316);
 }
+.avatar-can .avatar-head,
+.avatar-can .preview-head {
+  stroke: #111316;
+  stroke-width: 5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.avatar-can .avatar-eye,
+.avatar-can .preview-eye {
+  fill: #fffef8;
+  stroke: #111316;
+  stroke-width: 5;
+  stroke-linejoin: round;
+}
+.avatar-overlay {
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.avatar-overlay-body {
+  fill: var(--avatar-body-color, #ee682a);
+  stroke: #111316;
+  stroke-width: 5;
+}
+.avatar-overlay-ink {
+  fill: #111316;
+  stroke: #111316;
+  stroke-width: 5;
+}
+.avatar-overlay-paper {
+  fill: #fffef8;
+  stroke: #111316;
+  stroke-width: 5;
+}
+.avatar-overlay-metal {
+  fill: #c5c8cc;
+  stroke: #111316;
+  stroke-width: 5;
+}
+.avatar-overlay-shadow {
+  fill: #c8c4bb;
+  stroke: none;
+}
+.avatar-overlay-eyes {
+  fill: var(--avatar-eye-color, #111316);
+  stroke: #111316;
+  stroke-width: 5;
+}
+.avatar-overlay.is-unstroked {
+  stroke: none;
+  stroke-width: 0;
+}
 .avatar-head,
 .avatar-eye {
   transition: fill 420ms cubic-bezier(0.22, 1, 0.36, 1);

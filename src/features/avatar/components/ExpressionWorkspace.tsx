@@ -27,15 +27,26 @@ import { scaleEye, updateEyeDimension } from '@/features/avatar/expressionEditin
 import { type Expression } from '@/features/avatar/geometry'
 import { defaultExpression } from '@/features/avatar/presets'
 import { type SurfaceConfig } from '@/features/avatar/surfaces'
+import { CanonicalCanGraphic } from '@/features/rendering/components/CanonicalCanGraphic'
+import { OverlayPathList } from '@/features/rendering/components/OverlayPaths'
 import { StaticPixelAvatarCanvas } from '@/features/rendering/components/PixelAvatarCanvas'
 export function SurfaceThumbnail({ surface }: { surface: SurfaceConfig }) {
   const geometry = getPreviewGeometry(defaultExpression, surface, emptyBodyNodes)
   return (
-    <svg viewBox="-150 -150 300 300" aria-hidden="true">
+    <svg
+      className={geometry.overlays.length || geometry.canonicalCan ? 'avatar-can' : undefined}
+      viewBox="-150 -150 300 300"
+      aria-hidden="true"
+    >
+      {geometry.canonicalCan && (
+        <CanonicalCanGraphic source={geometry.canonicalCan} bodyColor="#ee682a" />
+      )}
+      <OverlayPathList overlays={geometry.overlays} placement="back" />
       {geometry.backPaths.map((pathValue, index) => (
         <path d={pathValue} key={index} />
       ))}
-      <path d={geometry.headPath} />
+      {!geometry.canonicalCan && <path d={geometry.headPath} />}
+      <OverlayPathList overlays={geometry.overlays} placement="front" />
     </svg>
   )
 }
@@ -82,12 +93,20 @@ export function ExpressionPreview({
   }
   const clipId = `preview-${id}`
   return (
-    <svg className="avatar-preview" viewBox="-150 -150 300 300" aria-hidden="true">
+    <svg
+      className={`avatar-preview${geometry.overlays.length || geometry.canonicalCan ? ' avatar-can' : ''}`}
+      viewBox="-150 -150 300 300"
+      aria-hidden="true"
+    >
       <defs>
         <clipPath id={clipId}>
           <path d={geometry.headPath} />
         </clipPath>
       </defs>
+      {geometry.canonicalCan && (
+        <CanonicalCanGraphic source={geometry.canonicalCan} bodyColor={resolvedColors.body} />
+      )}
+      <OverlayPathList overlays={geometry.overlays} placement="back" colors={resolvedColors} />
       {geometry.backPaths.map((pathValue, index) => (
         <path
           className="preview-head"
@@ -96,19 +115,27 @@ export function ExpressionPreview({
           style={{ fill: resolvedColors.body }}
         />
       ))}
-      <path className="preview-head" d={geometry.headPath} style={{ fill: resolvedColors.body }} />
-      <g clipPath={`url(#${clipId})`}>
+      {!geometry.canonicalCan && (
+        <path
+          className="preview-head"
+          d={geometry.headPath}
+          style={{ fill: resolvedColors.body }}
+        />
+      )}
+      <g
+        clipPath={geometry.overlays.length || geometry.canonicalCan ? undefined : `url(#${clipId})`}
+      >
         <path
           className="preview-eye"
           d={geometry.leftPath}
           opacity={geometry.leftVisible ? 1 : 0}
-          style={{ fill: resolvedColors.eyes }}
+          style={{ fill: geometry.overlays.length ? '#fffef8' : resolvedColors.eyes }}
         />
         <path
           className="preview-eye"
           d={geometry.rightPath}
           opacity={geometry.rightVisible ? 1 : 0}
-          style={{ fill: resolvedColors.eyes }}
+          style={{ fill: geometry.overlays.length ? '#fffef8' : resolvedColors.eyes }}
         />
       </g>
       {geometry.frontPaths.map((pathValue, index) => (
@@ -119,6 +146,7 @@ export function ExpressionPreview({
           style={{ fill: resolvedColors.body }}
         />
       ))}
+      <OverlayPathList overlays={geometry.overlays} placement="front" colors={resolvedColors} />
     </svg>
   )
 }
@@ -401,6 +429,31 @@ export function ExpressionWorkspace({
                   onChange={value => update({ [field]: value })}
                 />
               ))}
+              <p className="field-help">
+                {t('Oriente le corps, la tête, le spray et les yeux ensemble.')}
+              </p>
+            </Card>
+            <Card className="dialog-group">
+              <h3>{t('Membres rubber-hose')}</h3>
+              {(
+                [
+                  ['armHip', 'Bras hanche'],
+                  ['armPoint', 'Bras qui pointe'],
+                  ['legBack', 'Jambe arrière'],
+                  ['legFront', 'Jambe avant'],
+                ] as const
+              ).map(([field, label]) => (
+                <NumericField
+                  key={field}
+                  label={label}
+                  value={editing.draft[field] ?? 0}
+                  unit="°"
+                  onChange={value => update({ [field]: value })}
+                />
+              ))}
+              <p className="field-help">
+                {t('Les quatre membres tournent autour de leur épaule ou hanche.')}
+              </p>
             </Card>
           </ControlSection>
           <ControlSection

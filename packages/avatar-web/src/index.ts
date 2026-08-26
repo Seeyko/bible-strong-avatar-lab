@@ -2,6 +2,9 @@ import {
   advanceAvatarPlayback,
   createAvatarPlaybackState,
   MAX_BODY_NODES,
+  MAX_OVERLAY_PATHS,
+  overlayPaint,
+  tintCanonicalCanMarkup,
   pauseAvatarPlayback,
   playAvatarAnimation,
   renderAvatarDefinition,
@@ -50,6 +53,7 @@ export type CreateAvatarOptions = {
 const svgNamespace = 'http://www.w3.org/2000/svg'
 const controlledExpressionTransitionMs = 420
 const bodyPathSlots = MAX_BODY_NODES + 2
+const overlayPathSlots = MAX_OVERLAY_PATHS
 let avatarInstanceId = 0
 
 const dimension = (size: number | string) => (typeof size === 'number' ? `${size}px` : size)
@@ -129,15 +133,27 @@ export function createAvatar(
   svg.append(defs)
 
   const initialScene = renderAvatarDefinition(definition)
+  const backOverlays = Array.from({ length: overlayPathSlots }, () => createSvgElement('path'))
   const backPaths = Array.from({ length: bodyPathSlots }, () => createSvgElement('path'))
   const headPath = createSvgElement('path')
+  const canonicalCan = createSvgElement('g')
+  canonicalCan.setAttribute('class', 'bs-avatar__can-lock')
   const eyeGroup = createSvgElement('g')
   eyeGroup.setAttribute('clip-path', `url(#${clipId})`)
   const leftPath = createSvgElement('path')
   const rightPath = createSvgElement('path')
   eyeGroup.append(leftPath, rightPath)
   const frontPaths = Array.from({ length: bodyPathSlots }, () => createSvgElement('path'))
-  svg.append(...backPaths, headPath, eyeGroup, ...frontPaths)
+  const frontOverlays = Array.from({ length: overlayPathSlots }, () => createSvgElement('path'))
+  svg.append(
+    ...backOverlays,
+    ...backPaths,
+    canonicalCan,
+    headPath,
+    eyeGroup,
+    ...frontPaths,
+    ...frontOverlays
+  )
   host.append(svg)
   mount.append(host)
 
@@ -163,6 +179,47 @@ export function createAvatar(
       element.setAttribute('d', scene.geometry.frontPaths[index] ?? '')
       element.setAttribute('fill', scene.colors.body)
     })
+    const lock = scene.geometry.canonicalCan
+    if (lock) {
+      canonicalCan.setAttribute('transform', lock.transform)
+      canonicalCan.innerHTML = tintCanonicalCanMarkup(lock.innerMarkup, { body: scene.colors.body })
+    } else {
+      canonicalCan.removeAttribute('transform')
+      canonicalCan.innerHTML = ''
+    }
+    headPath.setAttribute('display', lock ? 'none' : '')
+    eyeGroup.setAttribute('display', lock ? 'none' : '')
+    const can = scene.geometry.overlays.length > 0
+    eyeGroup.setAttribute('clip-path', can ? '' : `url(#${clipId})`)
+    headPath.setAttribute('stroke', can ? '#111316' : 'none')
+    headPath.setAttribute('stroke-width', can ? '5' : '0')
+    headPath.setAttribute('stroke-linejoin', 'round')
+    leftPath.setAttribute('fill', can ? '#fffef8' : scene.colors.eyes)
+    rightPath.setAttribute('fill', can ? '#fffef8' : scene.colors.eyes)
+    leftPath.setAttribute('stroke', can ? '#111316' : 'none')
+    rightPath.setAttribute('stroke', can ? '#111316' : 'none')
+    leftPath.setAttribute('stroke-width', can ? '5' : '0')
+    rightPath.setAttribute('stroke-width', can ? '5' : '0')
+    const paintOverlaySlot = (elements: SVGPathElement[], placement: 'back' | 'front') => {
+      const layers = scene.geometry.overlays.filter(overlay => overlay.placement === placement)
+      elements.forEach((element, index) => {
+        const overlay = layers[index]
+        if (!overlay) {
+          element.setAttribute('d', '')
+          return
+        }
+        const paint = overlayPaint(overlay, scene.colors)
+        element.setAttribute('d', paint.d)
+        element.setAttribute('fill', paint.fill)
+        element.setAttribute('stroke', paint.stroke)
+        element.setAttribute('stroke-width', String(paint.strokeWidth))
+        element.setAttribute('stroke-linejoin', 'round')
+        element.setAttribute('stroke-linecap', 'round')
+        element.setAttribute('fill-rule', paint.fillRule)
+      })
+    }
+    paintOverlaySlot(backOverlays, 'back')
+    paintOverlaySlot(frontOverlays, 'front')
   }
 
   let playback = createAvatarPlaybackState()

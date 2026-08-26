@@ -161,7 +161,11 @@ function PoseControls({ controller }: { controller: StudioController }) {
           <PanelTitle
             level={3}
             title="Rotation de la tête"
-            subtitle="Les libellés ↔ sont scrubbables, comme dans Figma."
+            subtitle={
+              activeAvatar.body.primary.type === 'can'
+                ? 'Oriente le corps, la tête, le spray et les yeux ensemble.'
+                : 'Les libellés ↔ sont scrubbables, comme dans Figma.'
+            }
           />
           <NumericField
             label="Rotation X"
@@ -185,6 +189,39 @@ function PoseControls({ controller }: { controller: StudioController }) {
             onChange={value => updateImmediate({ ...expression, headZ: value })}
           />
         </InspectorCard>
+        {activeAvatar.body.primary.type === 'can' && (
+          <InspectorCard>
+            <PanelTitle
+              level={3}
+              title="Membres rubber-hose"
+              subtitle="Les quatre membres tournent autour de leur épaule ou hanche."
+            />
+            <NumericField
+              label="Bras hanche"
+              value={expression.armHip ?? 0}
+              unit="°"
+              onChange={value => updateImmediate({ ...expression, armHip: value })}
+            />
+            <NumericField
+              label="Bras qui pointe"
+              value={expression.armPoint ?? 0}
+              unit="°"
+              onChange={value => updateImmediate({ ...expression, armPoint: value })}
+            />
+            <NumericField
+              label="Jambe arrière"
+              value={expression.legBack ?? 0}
+              unit="°"
+              onChange={value => updateImmediate({ ...expression, legBack: value })}
+            />
+            <NumericField
+              label="Jambe avant"
+              value={expression.legFront ?? 0}
+              unit="°"
+              onChange={value => updateImmediate({ ...expression, legFront: value })}
+            />
+          </InspectorCard>
+        )}
       </ControlSection>
       <ControlSection title="Yeux" subtitle="Forme, placement, orientation et couleur du regard.">
         <InspectorCard className="color-panel">
@@ -828,7 +865,8 @@ export function StudioInspector({ controller }: { controller: StudioController }
                           value={activeAvatar.colors.body}
                           onChange={body => updateAvatarColors({ body })}
                         />
-                        {activeAvatar.body.primary.type === 'graffiti' && (
+                        {(activeAvatar.body.primary.type === 'graffiti' ||
+                          activeAvatar.body.primary.type === 'can') && (
                           <GraffitiColorTokens
                             value={activeAvatar.colors.body}
                             onChange={body => updateAvatarColors({ body })}

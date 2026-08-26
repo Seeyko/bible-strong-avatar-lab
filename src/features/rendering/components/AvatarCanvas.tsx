@@ -46,6 +46,8 @@ import { type SurfaceConfig } from '@/features/avatar/surfaces'
 import { type CanvasPreviewTarget } from '@/features/rendering/canvasPreview'
 import { LivePixelAvatarCanvas } from '@/features/rendering/components/PixelAvatarCanvas'
 import { type RenderedRotationGizmo } from '@/features/rendering/renderedRotationGizmo'
+import { LiveCanonicalCanGraphic } from '@/features/rendering/components/CanonicalCanGraphic'
+import { OverlayPathList } from '@/features/rendering/components/OverlayPaths'
 import {
   findBodyNodePath,
   type RenderedColors,
@@ -559,7 +561,12 @@ export function AvatarCanvas({
     rightOpacity,
     offsetX,
     offsetY,
+    overlayPaths,
+    overlays,
+    canonicalCanTransform,
+    canonicalCanMarkup,
   } = scene
+  const useLockSvg = Boolean(canonicalCanMarkup.get())
   const svgRef = useRef<SVGSVGElement>(null)
   const [activeDragType, setActiveDragType] = useState<
     'arcball' | 'width' | 'height' | 'size' | 'spacing' | 'rotate' | null
@@ -795,7 +802,7 @@ export function AvatarCanvas({
       )}
       <svg
         ref={svgRef}
-        className="avatar"
+        className={`avatar${overlays.current.length || useLockSvg ? ' avatar-can' : ''}`}
         viewBox="-150 -150 300 300"
         role="img"
         aria-label={t('Avatar procédural')}
@@ -807,8 +814,36 @@ export function AvatarCanvas({
           <clipPath id="avatar-head-clip">
             <motion.path d={headPath} />
           </clipPath>
+          {(overlays.current.length > 0 || useLockSvg) && (
+            <filter id="avatar-paper-grain" x="-20%" y="-20%" width="140%" height="140%">
+              <feTurbulence
+                type="fractalNoise"
+                baseFrequency="0.85"
+                numOctaves="3"
+                result="grain"
+              />
+              <feColorMatrix type="saturate" values="0" in="grain" result="mono" />
+              <feComponentTransfer in="mono" result="soft">
+                <feFuncA type="table" tableValues="0 0.07" />
+              </feComponentTransfer>
+              <feBlend in="SourceGraphic" in2="soft" mode="multiply" />
+            </filter>
+          )}
         </defs>
-        <motion.g style={{ x: offsetX, y: offsetY }}>
+        <motion.g
+          style={{ x: offsetX, y: offsetY }}
+          filter={overlays.current.length || useLockSvg ? 'url(#avatar-paper-grain)' : undefined}
+        >
+          <LiveCanonicalCanGraphic
+            transform={canonicalCanTransform}
+            markup={canonicalCanMarkup}
+            bodyColor={colors.body}
+            onPointerDown={event => {
+              onBodyNodeSelect('primary')
+              startDrag(event)
+            }}
+          />
+          <OverlayPathList overlays={overlays.current} paths={overlayPaths} placement="back" />
           {backPaths.map((pathValue, index) => (
             <motion.path
               className={`avatar-head ${highlight === 'head' ? 'cyan-outline' : ''}`}
@@ -817,15 +852,19 @@ export function AvatarCanvas({
               onPointerDown={event => selectBodyPath(event, backNodeIds.current[index])}
             />
           ))}
-          <motion.path
-            className={`avatar-head ${highlight === 'head' ? 'cyan-outline' : ''}`}
-            d={headPath}
-            onPointerDown={event => {
-              onBodyNodeSelect('primary')
-              startDrag(event)
-            }}
-          />
-          <g clipPath="url(#avatar-head-clip)">
+          {!useLockSvg && (
+            <motion.path
+              className={`avatar-head ${highlight === 'head' ? 'cyan-outline' : ''}`}
+              d={headPath}
+              onPointerDown={event => {
+                onBodyNodeSelect('primary')
+                startDrag(event)
+              }}
+            />
+          )}
+          <g
+            clipPath={overlays.current.length || useLockSvg ? undefined : 'url(#avatar-head-clip)'}
+          >
             {(showWire || highlight === 'head') &&
               wirePaths.map((pathValue, index) => (
                 <motion.path className="wire" d={pathValue} key={index} />
@@ -851,6 +890,7 @@ export function AvatarCanvas({
               onPointerDown={event => selectBodyPath(event, frontNodeIds.current[index])}
             />
           ))}
+          <OverlayPathList overlays={overlays.current} paths={overlayPaths} placement="front" />
         </motion.g>
         {selectedBodyPath && (
           <motion.path className="selection-outline body-selection-outline" d={selectedBodyPath} />
@@ -864,7 +904,7 @@ export function AvatarCanvas({
             onCommit={onBodyNodeChange}
           />
         )}
-        {editor?.visible && (
+        {editor?.visible && !useLockSvg && (
           <g className="eye-editor">
             {activeDragType !== null && activeDragType !== 'arcball' && (
               <path className="selection-outline" d={editor.selectionPath} />

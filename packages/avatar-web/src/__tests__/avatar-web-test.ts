@@ -1,5 +1,7 @@
 // @vitest-environment jsdom
 
+import { MAX_BODY_NODES, MAX_OVERLAY_PATHS } from '@bible-strong/avatar-core'
+
 import definitionJson from '../../../../examples/react-vite-consumer/src/strobi.avatar.json'
 import { createAvatar } from '../index'
 
@@ -21,7 +23,9 @@ describe('@bible-strong/avatar-web', () => {
     })
 
     expect(document.querySelector('#avatar svg')).not.toBeNull()
-    expect(document.querySelectorAll('#avatar svg > path')).toHaveLength(37)
+    expect(document.querySelectorAll('#avatar svg > path')).toHaveLength(
+      MAX_BODY_NODES + 2 + MAX_BODY_NODES + 2 + 1 + MAX_OVERLAY_PATHS * 2
+    )
     expect(document.querySelector('[role="img"]')?.getAttribute('aria-label')).toBe(
       'Procedural avatar'
     )

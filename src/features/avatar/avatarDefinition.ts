@@ -32,6 +32,7 @@ const mapSurface = <TType extends SurfaceType>(
   ...(surface.tipRoundness === undefined ? {} : { tipRoundness: surface.tipRoundness }),
   ...(surface.baseRoundness === undefined ? {} : { baseRoundness: surface.baseRoundness }),
   ...(surface.graffitiRing === undefined ? {} : { graffitiRing: surface.graffitiRing }),
+  ...(surface.canSpray === undefined ? {} : { canSpray: surface.canSpray }),
 })
 
 const mapExpression = (expression: Expression): AvatarExpressionDefinition => ({

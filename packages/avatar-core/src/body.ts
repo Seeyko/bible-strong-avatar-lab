@@ -1,4 +1,5 @@
 import { parseGraffitiRingId } from './graffiti'
+import { parseCanSpray } from './rubberHose'
 import { surfaceLabels, surfacePresets, type SurfaceConfig, type SurfaceType } from './surfaces'
 
 export type BodyVector = readonly [number, number, number]
@@ -54,6 +55,9 @@ export const parseSurfaceConfig = (value: unknown, fallback: SurfaceConfig): Sur
     ...(type === 'graffiti'
       ? { graffitiRing: parseGraffitiRingId(candidate.graffitiRing ?? preset.graffitiRing) }
       : { graffitiRing: undefined }),
+    ...(type === 'can'
+      ? { canSpray: parseCanSpray(candidate.canSpray ?? preset.canSpray) }
+      : { canSpray: undefined }),
   }
 }
 
