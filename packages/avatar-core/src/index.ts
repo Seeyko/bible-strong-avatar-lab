@@ -1,6 +1,7 @@
 export * from './ambientMotion'
 export * from './avatarDefinition'
 export * from './body'
+export * from './canKidGeometry'
 export * from './canLimbs'
 export * from './canonicalCan'
 export * from './geometry'

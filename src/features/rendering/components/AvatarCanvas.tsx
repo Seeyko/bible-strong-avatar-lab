@@ -814,26 +814,8 @@ export function AvatarCanvas({
           <clipPath id="avatar-head-clip">
             <motion.path d={headPath} />
           </clipPath>
-          {(overlays.current.length > 0 || useLockSvg) && (
-            <filter id="avatar-paper-grain" x="-20%" y="-20%" width="140%" height="140%">
-              <feTurbulence
-                type="fractalNoise"
-                baseFrequency="0.85"
-                numOctaves="3"
-                result="grain"
-              />
-              <feColorMatrix type="saturate" values="0" in="grain" result="mono" />
-              <feComponentTransfer in="mono" result="soft">
-                <feFuncA type="table" tableValues="0 0.07" />
-              </feComponentTransfer>
-              <feBlend in="SourceGraphic" in2="soft" mode="multiply" />
-            </filter>
-          )}
         </defs>
-        <motion.g
-          style={{ x: offsetX, y: offsetY }}
-          filter={overlays.current.length || useLockSvg ? 'url(#avatar-paper-grain)' : undefined}
-        >
+        <motion.g style={{ x: offsetX, y: offsetY }}>
           <LiveCanonicalCanGraphic
             transform={canonicalCanTransform}
             markup={canonicalCanMarkup}
